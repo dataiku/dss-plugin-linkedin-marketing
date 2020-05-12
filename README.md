@@ -1,2 +1,2 @@
-# dss-plugin-linkedin-api-connector
+# Linkedin API Connector
 Retrieve data from LinkedIn's Marketing developer platform
