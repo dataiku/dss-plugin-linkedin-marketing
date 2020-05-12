@@ -1,2 +1,2 @@
-# Linkedin API Connector
-Retrieve data from LinkedIn's Marketing developer platform
+# Linkedin Marketing
+Retrieve data from LinkedIn's Marketing developer platform for A/B testing
