@@ -1,6 +1,6 @@
 {
     "meta": {
-        "label": "Retrieve campaigns datasets",
+        "label": "Retrieve LinkedIn campaigns",
         "description": "Pull campaign groups, campaigns, creatives, campaign analytics and creative analytrics from the LinkedIn API",
         "icon": "icon-linkedin"
     },
