@@ -1,0 +1,25 @@
+{
+    "meta": {
+        "label": "API configuration",
+        "description": "Define presets for users to call the API with specific credentials",
+        "icon": "icon-linkedin"
+    },
+    "defaultDefinableAtProjectLevel": true,
+    "defaultDefinableInline": false,
+    "definableInline": false,
+    "params": [
+        {
+            "name": "separator_authentification",
+            "label": "Authentification",
+            "type": "SEPARATOR",
+            "description": "Please refer to the LinkedIn documentation for 3-legged oauth : https://docs.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow"
+        },
+        {
+            "name": "access_token",
+            "label": "Access token",
+            "description": "Access token after LinkedIn's API 3 legged authentification. If empty, attempts to ascertain credentials from the environment.",
+            "type": "PASSWORD",
+            "mandatory": false
+        }
+    ]
+}

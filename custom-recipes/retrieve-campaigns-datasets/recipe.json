@@ -1,0 +1,65 @@
+{
+    "meta": {
+        "label": "Retrieve campaigns datasets",
+        "description": "Pull campaign groups, campaigns, creatives, campaign analytics and creative analytrics from the LinkedIn API",
+        "icon": "icon-linkedin"
+    },
+
+    "kind": "PYTHON",
+
+    "outputRoles": [
+        {
+            "name": "campaign_group_dataset",
+            "label": "Campaign groups output",
+            "description": "Description of the campaign groups from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "campaign_dataset",
+            "label": "Campaigns output",
+            "description": "Description of the campaigns from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "creative_dataset",
+            "label": "Creatives output",
+            "description": "Description of the creatives from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "campaign_analytics_dataset",
+            "label": "Campaigns' metrics",
+            "description": "Metrics related to the campaigns from the LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "creatives_analytics_dataset",
+            "label": "Creatives' metrics",
+            "description": "Metrics related to the creatives from the LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        }
+    ],
+
+    "params": [
+         {
+            "name": "api_configuration_preset",
+            "label": "API configuration preset",
+            "type": "PRESET",
+            "parameterSetId": "api-configuration",
+            "mandatory": true
+        }
+    ],
+
+    "resourceKeys": []
+
+}

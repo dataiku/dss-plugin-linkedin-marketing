@@ -1,0 +1,15 @@
+{
+  "actions": [
+    {
+      "ts": 1589280210571,
+      "action": "INSTALL",
+      "user": "admin"
+    }
+  ],
+  "gitState": {
+    "enabled": true,
+    "repository": "https://github.com/Marsobad/plugin-linkedin-api-connector.git",
+    "path": "",
+    "checkout": "refs/heads/master"
+  }
+}

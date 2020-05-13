@@ -1,0 +1,16 @@
+{
+    "id": "linkedin-api-connector",
+    "version": "0.0.1",
+    "meta": {
+        "label": "LinkedIn API Connector for AB Testing",
+        "description": "Use LinkedIn API to retrieve data about online campaigns and perform AB testing",
+        "author": "Dataiku (Adam JELLEY and Marine SOBAS)",
+        "icon": "icon-linkedin",
+        "tags": ["Connector"], 
+        // URL where the user can learn more about the plugin
+        "url": "https://www.dataiku.com/dss/plugins/info/linkedin-api-connector.html",
+        "supportLevel":"NOT_SUPPORTED",
+        "licenseInfo": "Apache Software License"
+    }
+}
+
