@@ -23,7 +23,7 @@ def get_query(headers: dict, ids: list() = [], granularity: str = "GROUP", batch
         df               A Pandas dataframe containing the LinkedIn data related to the input ids
     """
 
-    initial_param = {"GROUP": {"q": "search","search.account.values[0]":"urn:li:sponsoredAccount:50760462"}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
+    initial_param = {"GROUP": {"q": "search","search.account.values[0]":"urn:li:sponsoredAccount:50769046"}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
                                                                                                                                  "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}, "CREATIVES_ANALYTICS": {"q": "analytics", "pivot": "CREATIVE", "dateRange.start.day": "1", "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}}
 
     try:
