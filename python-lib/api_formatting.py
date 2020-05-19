@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import numpy as np
 from math import ceil
+import logging
 
 # ==============================================================================
 # CLASS AND FUNCTION DEFINITION
