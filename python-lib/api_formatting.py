@@ -87,8 +87,8 @@ def query_to_df(headers: dict, parameters: dict, granularity: str) -> pd.DataFra
         df = pd.DataFrame.from_dict(query.json()["elements"])
         return df
     except KeyError:
-        print(query.json())
-        print("***Could not convert to dataframe, consider decreasing the batch size")
+        logging.error(e)
+        raise ValueError("Could not convert to dataframe:"+str(query.json()))
 
 
 def get_analytics_parameters(ids: list(), granularity: str) -> dict:
