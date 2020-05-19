@@ -27,8 +27,9 @@ def get_query(headers: dict, ids: list() = [], granularity: str = "GROUP", batch
 
     try:
         initial_param[granularity]
-    except KeyError:
-        print("***Wrong value for granularity : should be either GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
+    except KeyError as e:
+        logging.error(e)
+        raise ValueError("Granularity value is not valid : should be either GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
 
     count = len(ids)
     if count >= batch_size:
