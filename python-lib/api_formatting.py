@@ -9,7 +9,7 @@ import logging
 # ==============================================================================
 
 
-def get_query(headers: dict, ids: list() = [], granularity: str = "GROUPE", batch_size: int = 1000) -> pd.DataFrame:
+def get_query(headers: dict, ids: list() = [], granularity: str = "GROUP", batch_size: int = 1000) -> pd.DataFrame:
     """
     Perfom a Get query and return the data related to the creative or campaign ids given. When the query is too voluminous, lower the batch size to perform a batch query. 
 
