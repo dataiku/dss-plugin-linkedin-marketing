@@ -86,7 +86,7 @@ def query_to_df(headers: dict, parameters: dict, granularity: str) -> pd.DataFra
     try:
         df = pd.DataFrame.from_dict(query.json()["elements"])
         return df
-    except KeyError:
+    except KeyError as e:
         logging.error(e)
         raise ValueError("Could not convert to dataframe:"+str(query.json()))
 
