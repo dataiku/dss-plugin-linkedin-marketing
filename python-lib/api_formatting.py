@@ -88,7 +88,7 @@ def query_to_df(headers: dict, parameters: dict, granularity: str) -> pd.DataFra
         return df
     except KeyError as e:
         logging.error(e)
-        raise ValueError("Could not convert to dataframe:"+str(query.json()))
+        raise ValueError("Could not convert to dataframe: "+str(query.json()))
 
 
 def get_analytics_parameters(ids: list(), granularity: str) -> dict:
