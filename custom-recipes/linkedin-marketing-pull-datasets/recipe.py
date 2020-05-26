@@ -76,6 +76,6 @@ groups_dataset.write_with_schema(campaign_groups_df)
 campaigns_dataset.write_with_schema(campaigns_df)
 campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
 creatives_dataset.write_with_schema(creatives_df)
-#creatives_analytics_dataset.write_with_schema(creative_analytics_df)
+creatives_analytics_dataset.write_with_schema(creative_analytics_df)
 
 
