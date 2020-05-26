@@ -61,7 +61,7 @@
         {
             "name": "account_id",
             "label": "Account Id",
-            "description": "Id of the sponsored account : requires at least one campaign and one creative",
+            "description": "Id of the sponsored account. To retrieve all the tables, the account should contain at least one campaign and one creative",
             "type": "INT",
             "mandatory": true,
             "defaultValue":507690462
