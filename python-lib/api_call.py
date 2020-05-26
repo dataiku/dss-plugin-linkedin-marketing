@@ -24,20 +24,23 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
     initial_param = {"ACCOUNT":{"q": "search"},"GROUP": {"q": "search","search.account.values[0]":"urn:li:sponsoredAccount:"+str(account_id)}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
                                                                                                                                  "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}, "CREATIVES_ANALYTICS": {"q": "analytics", "pivot": "CREATIVE", "dateRange.start.day": "1", "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}}
 
-    try:
-        initial_param[granularity]
-    except KeyError as e:
-        logging.error(e)
-        raise ValueError("Granularity value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
-
-    count = len(ids)
-    if count >= batch_size:
-        query_output = batch_query(batch_size, ids, headers,
-                         granularity, initial_param[granularity])
+    if ids:
+        try:
+            initial_param[granularity]
+        except KeyError as e:
+            logging.error(e)
+            raise ValueError("Granularity value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
+    
+        count = len(ids)
+        if count >= batch_size:
+            query_output = batch_query(batch_size, ids, headers,
+                             granularity, initial_param[granularity])
+        else:
+            params = {**initial_param[granularity], **
+                      get_analytics_parameters(ids, granularity)}
+            query_output = query(headers, params, granularity)
     else:
-        params = {**initial_param[granularity], **
-                  get_analytics_parameters(ids, granularity)}
-        query_output = query(headers, params, granularity)
+        query_output = {"Plugin_response":"Increase the batch size"}
     return query_output
 
 
