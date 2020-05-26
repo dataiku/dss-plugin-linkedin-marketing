@@ -40,7 +40,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
                       get_analytics_parameters(ids, granularity)}
             query_output = query(headers, params, granularity)
     else:
-        query_output = {"Plugin_response":"Increase the batch size"}
+        query_output = {"Plugin_response":"Decrease the batch size"}
     return query_output
 
 
