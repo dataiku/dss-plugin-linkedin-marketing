@@ -40,8 +40,8 @@ creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names)
 ## ===============================================================================
 ## RUN
 ## ===============================================================================
-account = 507690462
-check_input_values(account,HEADERS)
+#account = 507690462
+check_input_values(account_id,HEADERS)
 
 group = get_query(HEADERS,account_id = account)
 api_formatter = LinkedInAPIFormatter(group)
