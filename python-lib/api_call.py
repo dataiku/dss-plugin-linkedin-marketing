@@ -56,11 +56,11 @@ def query(headers: dict, parameters: dict, granularity: str) -> dict():
     url = {"ACCOUNT":"https://api.linkedin.com/v2/adAccountsV2","GROUP": "https://api.linkedin.com/v2/adCampaignGroupsV2", "CAMPAIGN": "https://api.linkedin.com/v2/adCampaignsV2/", "CAMPAIGN_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2",
            "CREATIVES": "https://api.linkedin.com/v2/adCreativesV2/", "CREATIVES_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2"}
     
-    query = requests.get(url=url[granularity],headers=headers, params=parameters)
     if ids:
+        query = requests.get(url=url[granularity],headers=headers, params=parameters)
         return query.json()
     else:
-        return {"API_response":query}
+        return {"API_response":"Missing fields in query. Please decrease the batchsize"}
 
 
 def get_analytics_parameters(ids: list(), granularity: str) -> dict:
