@@ -23,10 +23,9 @@ HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_to
 groups_name = get_output_names_for_role("campaign_group_dataset")[0]
 groups_dataset = dataiku.Dataset(groups_name)
 
+campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
+campaigns_dataset = dataiku.Dataset(campaigns_names)
 
-#campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
-#campaigns_dataset = dataiku.Dataset(campaigns_names)
-#
 #creatives_names =  get_output_names_for_role("creative_dataset")[0]
 #creatives_dataset = dataiku.Dataset(creatives_names) 
 #
