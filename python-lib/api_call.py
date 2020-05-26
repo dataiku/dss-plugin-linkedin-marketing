@@ -6,7 +6,7 @@ import logging
 from api_format import LinkedInAPIFormatter
 
 
-def filter_query(headers:dict,granularity:str,mother:pd.DataFrame,batch_size:int = 1000):
+def filter_query(headers:dict,granularity:str,mother:pd.DataFrame,batch_size:int = 1000)-> dict():
     try:
         ids = mother.id.values
         query_output = get_query(headers, granularity= granularity, ids=ids, batch_size = batch_size) 
