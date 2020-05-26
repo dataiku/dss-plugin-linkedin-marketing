@@ -32,9 +32,9 @@ creatives_dataset = dataiku.Dataset(creatives_names)
 campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
 campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
 
-#creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
-#creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
-#
+creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
+creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
+
 ## ===============================================================================
 ## RUN
 ## ===============================================================================
@@ -64,7 +64,7 @@ campaign_analytics_df = api_formatter.format_to_df()
 groups_dataset.write_with_schema(campaign_groups_df)
 campaigns_dataset.write_with_schema(campaigns_df)
 campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
-#creatives_dataset.write_with_schema(campaign_analytics_df)
-#creatives_analytics_dataset.write_with_schema(creative_analytics_df)
+creatives_dataset.write_with_schema(campaign_analytics_df)
+creatives_analytics_dataset.write_with_schema(creative_analytics_df)
 
 
