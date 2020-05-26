@@ -69,7 +69,7 @@
         {
             "name": "batch_size",
             "label": "Batch size",
-            "description": "Number of ids per batch query. When you have the API raises a error 400 : too many entities, you should decrease the batch size",
+            "description": "Number of ids per batch query. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
             "type": "INT",
             "mandatory": true,
             "defaultValue":50
