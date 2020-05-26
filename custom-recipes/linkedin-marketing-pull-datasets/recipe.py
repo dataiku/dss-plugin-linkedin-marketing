@@ -50,7 +50,7 @@ campaigns_df = api_formatter.format_to_df()
 campaign_analytics = get_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", ids=campaign_groups_df.id.values)
 api_formatter = LinkedInAPIFormatter(campaign_analytics)
 campaign_analytics_df = api_formatter.format_to_df()
-#
+
 #creatives_df = get_query(HEADERS, filtered_campaign_ids,"CREATIVES", batch_size=100)
 #
 #creative_ids = creatives_df.id.values
@@ -63,7 +63,7 @@ campaign_analytics_df = api_formatter.format_to_df()
 
 groups_dataset.write_with_schema(campaign_groups_df)
 campaigns_dataset.write_with_schema(campaigns_df)
-#campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
+campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
 #creatives_dataset.write_with_schema(campaign_analytics_df)
 #creatives_analytics_dataset.write_with_schema(creative_analytics_df)
 
