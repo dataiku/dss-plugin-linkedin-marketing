@@ -5,7 +5,7 @@ import logging
 from api_format import LinkedInAPIFormatter
 
 
-def get_query(headers: dict, granularity: str = "GROUP", account_id : int=0, ids: list() = [], batch_size: int = 1000) -> list():
+def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() = [], batch_size: int = 1000) -> list():
     """
     Perfom a Get query and return the data related to the creative or campaign ids given. When the query is too voluminous, lower the batch size to perform a batch query. 
 
