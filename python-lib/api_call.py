@@ -111,7 +111,8 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
 
 def check_input_values(account_id:int,headers:dict):
     account = get_query(headers, granularity = "ACCOUNT")
-    try account["serviceErrorCode"]:
+    try:
+        account["serviceErrorCode"]:
         raise ValueError(account)
     except:
         api_formatter = LinkedInAPIFormatter(account)
