@@ -44,10 +44,8 @@ group_query = get_query(HEADERS,account_id = 507690462)
 api_formatter = LinkedInAPIFormatter(group_query)
 campaign_groups_df = api_formatter.format_to_df()
 
-#campaign_groups_df = get_query(HEADERS)
-#
-#groups_ids = campaign_groups_df.id.values
-#campaigns_df = get_query(HEADERS, groups_ids, "CAMPAIGN")
+groups_ids = campaign_groups_df.id.values
+campaigns_df = get_query(HEADERS, granularity= "CAMPAIGN", ids=groups_ids)
 #
 #groups = list(set(campaigns_df.campaignGroup.values))
 #filtered_groups = groups
@@ -63,9 +61,9 @@ campaign_groups_df = api_formatter.format_to_df()
 ## ===============================================================================
 ## WRITE
 ## ===============================================================================
-#
+
 groups_dataset.write_with_schema(campaign_groups_df)
-#campaigns_dataset.write_with_schema(campaigns_df)
+campaigns_dataset.write_with_schema(campaigns_df)
 #campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
 #creatives_dataset.write_with_schema(campaign_analytics_df)
 #creatives_analytics_dataset.write_with_schema(creative_analytics_df)
