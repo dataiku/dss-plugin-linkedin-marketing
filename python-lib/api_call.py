@@ -5,14 +5,16 @@ import logging
 from api_format import LinkedInAPIFormatter
 
 
-def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() = [], batch_size: int = 1000) -> list():
+def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() = [], batch_size: int = 1000) -> dict():
     """
-    Perfom a Get query and return the data related to the creative or campaign ids given. When the query is too voluminous, lower the batch size to perform a batch query. 
+    Perfom a Get query and return the data related to the creative or campaign ids given as a list of 
+    When the query is too voluminous, lower the batch size to perform a batch query. 
 
     Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        ids              List of campaign groups, campaigns or creative ids - ex : [601956786, 602189436] for campaign groups
+        account_id       ID of the sponsored ad account 
+        ids              List of campaign groups, campaigns or creative ids to specify the query - ex : [601956786, 602189436] for campaign groups
         batch_size       Number of ids by batch query (ex - 100)
 
     Outputs: 
@@ -39,7 +41,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
     return query_output
 
 
-def query(headers: dict, parameters: dict, granularity: str) -> list():
+def query(headers: dict, parameters: dict, granularity: str) -> dict():
     """
     Retrieve a dataframe with data pulled from the API
 
