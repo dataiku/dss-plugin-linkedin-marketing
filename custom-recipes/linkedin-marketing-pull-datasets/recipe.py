@@ -26,12 +26,12 @@ groups_dataset = dataiku.Dataset(groups_name)
 campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
 campaigns_dataset = dataiku.Dataset(campaigns_names)
 
-#creatives_names =  get_output_names_for_role("creative_dataset")[0]
-#creatives_dataset = dataiku.Dataset(creatives_names) 
-#
-#campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
-#campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
-#
+creatives_names =  get_output_names_for_role("creative_dataset")[0]
+creatives_dataset = dataiku.Dataset(creatives_names) 
+
+campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
+campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
+
 #creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
 #creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
 #
@@ -39,18 +39,17 @@ campaigns_dataset = dataiku.Dataset(campaigns_names)
 ## RUN
 ## ===============================================================================
 
-group_query = get_query(HEADERS,account_id = 507690462)
-api_formatter = LinkedInAPIFormatter(group_query)
+group = get_query(HEADERS,account_id = 507690462)
+api_formatter = LinkedInAPIFormatter(group)
 campaign_groups_df = api_formatter.format_to_df()
 
-campaign_query = get_query(HEADERS, granularity= "CAMPAIGN", ids=campaign_groups_df.id.values)
-api_formatter = LinkedInAPIFormatter(campaign_query)
+campaign = get_query(HEADERS, granularity= "CAMPAIGN", ids=campaign_groups_df.id.values)
+api_formatter = LinkedInAPIFormatter(campaign)
 campaigns_df = api_formatter.format_to_df()
 
-#groups = list(set(campaigns_df.campaignGroup.values))
-#filtered_groups = groups
-#filtered_campaign_ids = list(set(campaigns_df[campaigns_df['campaignGroup'].isin(filtered_groups)]["id"].values))
-#campaign_analytics_df = get_query(HEADERS, filtered_campaign_ids, "CAMPAIGN_ANALYTICS")
+campaign_analytics = get_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", ids=campaign_groups_df.id.values)
+api_formatter = LinkedInAPIFormatter(campaign_analytics)
+campaign_analytics_df = api_formatter.format_to_df()
 #
 #creatives_df = get_query(HEADERS, filtered_campaign_ids,"CREATIVES", batch_size=100)
 #
