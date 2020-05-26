@@ -7,6 +7,20 @@ from api_format import LinkedInAPIFormatter
 
 
 def filter_query(headers:dict,granularity:str,mother:pd.DataFrame,batch_size:int = 1000)-> dict():
+    """
+    Handle search queries filtered by ids. The list of ids is derived from a mother database. 
+    
+        Inputs:
+        headers          Headers of the GET query, containing the access token for the OAuth2 identification
+        granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        account_id       ID of the sponsored ad account 
+        mother           Dataframe which contains the ids used to filter the query.  Ex - mother : campaign groups -> child: campaigns
+        batch_size       Number of ids by batch query (ex - 100)
+
+    Outputs: 
+        query_output     Output of the API call with the appropriate content, for ex- dateRange, impressions... 
+    """
+    
     try:
         ids = mother.id.values
         query_output = get_query(headers, granularity= granularity, ids=ids, batch_size = batch_size) 
@@ -18,7 +32,7 @@ def filter_query(headers:dict,granularity:str,mother:pd.DataFrame,batch_size:int
         
 def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() = [], batch_size: int = 1000) -> dict():
     """
-    Perfom a Get query and return the data related to the creative or campaign ids given as a list of 
+    Perfom a GET query and return the data related to the creative or campaign ids given as a list of ids. 
     When the query is too voluminous, lower the batch size to perform a batch query. 
 
     Inputs:
@@ -122,6 +136,11 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
 
 
 def check_input_values(account_id:int,headers:dict):
+    """
+    Check if the account and the access tokens are valid
+    headers          Headers of the GET query, containing the access token for the OAuth2 identification
+    account_id       ID of the sponsored ad account 
+    """
     account = get_query(headers, granularity = "ACCOUNT")
     if "serviceErrorCode" in account.keys() :
         raise ValueError(str(account))
