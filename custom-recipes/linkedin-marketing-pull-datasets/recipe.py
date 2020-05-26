@@ -41,7 +41,7 @@ groups_dataset = dataiku.Dataset(groups_name)
 ## ===============================================================================
 
 group_query = get_query(HEADERS)
-api_formatter = LinkedInAPIFormatter(group_query)
+api_formatter = LinkedInAPIFormatter(group_query,account_id = 507690462)
 campaign_groups_df = api_formatter.format_to_df()
 
 #campaign_groups_df = get_query(HEADERS)
