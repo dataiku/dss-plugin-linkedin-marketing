@@ -109,8 +109,8 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
     return query_output
 
 
-def check_account_id(account_id:int):
-    account = get_query(HEADERS, granularity = "ACCOUNT")
+def check_account_id(account_id:int,headers:dict):
+    account = get_query(headers, granularity = "ACCOUNT")
     api_formatter = LinkedInAPIFormatter(group)
     account_df = api_formatter.format_to_df()
     if account_id not in account_df.id.values:
