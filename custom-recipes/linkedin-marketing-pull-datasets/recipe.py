@@ -53,11 +53,11 @@ campaign_analytics = get_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", ids=c
 api_formatter = LinkedInAPIFormatter(campaign_analytics)
 campaign_analytics_df = api_formatter.format_to_df()
 
-creative = get_query(HEADERS, granularity= "CREATIVES", ids=campaigns_df.id.values, batch_size = 100)
+creative = get_query(HEADERS, granularity= "CREATIVES", ids=campaigns_df.id.values, batch_size = 1000)
 api_formatter = LinkedInAPIFormatter(creative)
 creatives_df = api_formatter.format_to_df()
 
-creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 100)
+creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000)
 api_formatter = LinkedInAPIFormatter(creative_analytics)
 creative_analytics_df = api_formatter.format_to_df()
 
