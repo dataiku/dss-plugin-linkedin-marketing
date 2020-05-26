@@ -46,24 +46,19 @@ group = get_query(HEADERS,granularity= "GROUP",account_id = account_id)
 api_formatter = LinkedInAPIFormatter(group)
 campaign_groups_df = api_formatter.format_to_df()
 
-campaign = get_query(HEADERS, granularity= "CAMPAIGN", ids=campaign_groups_df.id.values)
+campaign = filter_query(HEADERS, granularity= "CAMPAIGN", mother=campaign_groups_df)
 api_formatter = LinkedInAPIFormatter(campaign)
 campaigns_df = api_formatter.format_to_df()
 
-campaign_analytics = get_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", ids=campaigns_df.id.values)
+campaign_analytics = filter_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", mother =campaigns_df)
 api_formatter = LinkedInAPIFormatter(campaign_analytics)
 campaign_analytics_df = api_formatter.format_to_df()
 
-creative = get_query(HEADERS, granularity= "CREATIVES", ids=campaigns_df.id.values, batch_size = 1000)
+creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 1000)
 api_formatter = LinkedInAPIFormatter(creative)
 creatives_df = api_formatter.format_to_df()
 
-try:
-    ids = creatives_df.id.values
-    creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000) 
-except AttributeError as e:
-    creative_analytics = {"API_response":"No creatives - perhaps, decrease the batch size"}
-
+creative_analytics = filter_query(HEADERS, granularity= "CREATIVES_ANALYTICS", mother=creatives_df, batch_size = 1000) 
 api_formatter = LinkedInAPIFormatter(creative_analytics)
 creative_analytics_df = api_formatter.format_to_df()
 
