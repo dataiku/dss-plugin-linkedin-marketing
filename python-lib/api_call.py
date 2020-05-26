@@ -38,7 +38,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
     else:
         params = {**initial_param[granularity], **
                   get_analytics_parameters(ids, granularity)}
-        query_output = query(headers, params, granulari
+        query_output = query(headers, params, granularity)
     return query_output
 
 
