@@ -57,6 +57,13 @@
             "type": "PRESET",
             "parameterSetId": "api-configuration",
             "mandatory": true
+        },
+        {
+            "name": "account_id",
+            "label": "Account Id",
+            "description": "Id of the sponsored account : requires at least one campaign and one creative",
+            "type": "INT",
+            "mandatory": true
         }
     ],
 
