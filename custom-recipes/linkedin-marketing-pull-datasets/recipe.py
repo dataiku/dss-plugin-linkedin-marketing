@@ -20,7 +20,7 @@ if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_token")} 
 account_id = get_recipe_config().get("account_id")
-
+check_input_values(account_id,HEADERS)
 
 groups_name = get_output_names_for_role("campaign_group_dataset")[0]
 groups_dataset = dataiku.Dataset(groups_name)
@@ -40,8 +40,6 @@ creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names)
 ## ===============================================================================
 ## RUN
 ## ===============================================================================
-#account = 507690462
-check_input_values(account_id,HEADERS)
 
 group = get_query(HEADERS,granularity= "GROUP",account_id = account_id)
 api_formatter = LinkedInAPIFormatter(group)
