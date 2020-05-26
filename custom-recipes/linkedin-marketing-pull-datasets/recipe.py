@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 
-from api_formatting import get_query
+#from api_formatting import get_query
+from api_call import get_query
+from api_format import LinkedInAPIFormatter
 
 import dataiku
 from dataiku.customrecipe import (
@@ -21,46 +23,51 @@ HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_to
 groups_name = get_output_names_for_role("campaign_group_dataset")[0]
 groups_dataset = dataiku.Dataset(groups_name)
 
-campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
-campaigns_dataset = dataiku.Dataset(campaigns_names)
 
-creatives_names =  get_output_names_for_role("creative_dataset")[0]
-creatives_dataset = dataiku.Dataset(creatives_names) 
+#campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
+#campaigns_dataset = dataiku.Dataset(campaigns_names)
+#
+#creatives_names =  get_output_names_for_role("creative_dataset")[0]
+#creatives_dataset = dataiku.Dataset(creatives_names) 
+#
+#campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
+#campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
+#
+#creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
+#creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
+#
+## ===============================================================================
+## RUN
+## ===============================================================================
 
-campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
-campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
+group_query = get_query(HEADERS)
+api_formatter = LinkedInAPIFormatter(group_query)
+campaign_groups_df = api_formatter.format_to_df()
 
-creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
-creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
-
-# ===============================================================================
-# RUN
-# ===============================================================================
-
-campaign_groups_df = get_query(HEADERS)
-
-groups_ids = campaign_groups_df.id.values
-campaigns_df = get_query(HEADERS, groups_ids, "CAMPAIGN")
-
-groups = list(set(campaigns_df.campaignGroup.values))
-filtered_groups = groups
-filtered_campaign_ids = list(set(campaigns_df[campaigns_df['campaignGroup'].isin(filtered_groups)]["id"].values))
-campaign_analytics_df = get_query(HEADERS, filtered_campaign_ids, "CAMPAIGN_ANALYTICS")
-
-creatives_df = get_query(HEADERS, filtered_campaign_ids,"CREATIVES", batch_size=100)
-
-creative_ids = creatives_df.id.values
-creative_analytics_df = get_query(HEADERS, creative_ids, "CREATIVES_ANALYTICS", batch_size=100)
-campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
-
-# ===============================================================================
-# WRITE
-# ===============================================================================
-
+#campaign_groups_df = get_query(HEADERS)
+#
+#groups_ids = campaign_groups_df.id.values
+#campaigns_df = get_query(HEADERS, groups_ids, "CAMPAIGN")
+#
+#groups = list(set(campaigns_df.campaignGroup.values))
+#filtered_groups = groups
+#filtered_campaign_ids = list(set(campaigns_df[campaigns_df['campaignGroup'].isin(filtered_groups)]["id"].values))
+#campaign_analytics_df = get_query(HEADERS, filtered_campaign_ids, "CAMPAIGN_ANALYTICS")
+#
+#creatives_df = get_query(HEADERS, filtered_campaign_ids,"CREATIVES", batch_size=100)
+#
+#creative_ids = creatives_df.id.values
+#creative_analytics_df = get_query(HEADERS, creative_ids, "CREATIVES_ANALYTICS", batch_size=100)
+#campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
+#
+## ===============================================================================
+## WRITE
+## ===============================================================================
+#
 groups_dataset.write_with_schema(campaign_groups_df)
-campaigns_dataset.write_with_schema(campaigns_df)
-campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
-creatives_dataset.write_with_schema(campaign_analytics_df)
-creatives_analytics_dataset.write_with_schema(creative_analytics_df)
+#campaigns_dataset.write_with_schema(campaigns_df)
+#campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
+#creatives_dataset.write_with_schema(campaign_analytics_df)
+#creatives_analytics_dataset.write_with_schema(creative_analytics_df)
 
 
