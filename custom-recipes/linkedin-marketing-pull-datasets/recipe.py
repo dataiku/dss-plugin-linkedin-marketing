@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
+import logging
 
 #from api_formatting import get_query
 from api_format import LinkedInAPIFormatter
@@ -59,6 +60,11 @@ creatives_df = api_formatter.format_to_df()
 
 
 print("***"+creatives_df.id.values)
+try:
+    ids = creatives_df.id.values
+except AttributeError as e:
+    logging.info(e)
+    
 #creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000)
 #api_formatter = LinkedInAPIFormatter(creative_analytics)
 #creative_analytics_df = api_formatter.format_to_df()
