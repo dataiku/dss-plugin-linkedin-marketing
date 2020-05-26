@@ -14,7 +14,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
         account_id       ID of the sponsored ad account 
-        ids              List of campaign groups, campaigns or creative ids to specify the query - ex : [601956786, 602189436] for campaign groups
+        ids              List of campaign groups, campaigns or creative ids to filter the query - ex : [601956786, 602189436] for campaign groups
         batch_size       Number of ids by batch query (ex - 100)
 
     Outputs: 
@@ -28,7 +28,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
         initial_param[granularity]
     except KeyError as e:
         logging.error(e)
-        raise ValueError("Granularity value is not valid : should be either GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
+        raise ValueError("Granularity value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
 
     count = len(ids)
     if count >= batch_size:
