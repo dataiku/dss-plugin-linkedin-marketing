@@ -1,5 +1,6 @@
 import requests
 import numpy as np
+import pandas as pd
 from math import ceil
 import logging
 from api_format import LinkedInAPIFormatter
