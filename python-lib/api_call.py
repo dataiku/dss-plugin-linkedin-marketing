@@ -5,10 +5,10 @@ import logging
 from api_format import LinkedInAPIFormatter
 
 
-def filter_query(headers:dict,granularity:str,mother_df:pd.DataFrame,batch_size:int = 1000):
+def filter_query(headers:dict,granularity:str,mother:pd.DataFrame,batch_size:int = 1000):
     try:
-        ids = mother_df.id.values
-        query_output = get_query(headers, granularity= granularity, ids=ids, batch_size = 1000) 
+        ids = mother.id.values
+        query_output = get_query(headers, granularity= granularity, ids=ids, batch_size = batch_size) 
     except AttributeError as e:
         logging.info(e)
         query_output = {"API_response":"No creatives - perhaps, decrease the batch size"}
