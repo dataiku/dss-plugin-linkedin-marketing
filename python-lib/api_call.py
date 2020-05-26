@@ -58,6 +58,7 @@ def query(headers: dict, parameters: dict, granularity: str) -> dict():
 
     query = requests.get(url=url[granularity],
                          headers=headers, params=parameters)
+    query_output = query.json()
     return query.json()
 
 
