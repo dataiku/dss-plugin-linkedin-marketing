@@ -109,10 +109,15 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
     return query_output
 
 
-def check_account_id(account_id:int,headers:dict):
+def check_input_values(account_id:int,headers:dict):
     account = get_query(headers, granularity = "ACCOUNT")
-    api_formatter = LinkedInAPIFormatter(account)
-    account_df = api_formatter.format_to_df()
-    if account_id not in account_df.id.values:
-        raise ValueError("Wrong account id or you don't have the permission to access this account")
+    try account["serviceErrorCode"]:
+        raise ValueError(account)
+    except:
+        api_formatter = LinkedInAPIFormatter(account)
+        account_df = api_formatter.format_to_df()
+        if account_id not in account_df.id.values:
+            raise ValueError("Wrong account id or you don't have the permission to access this account")
+        
+
 
