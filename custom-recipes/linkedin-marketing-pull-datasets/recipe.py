@@ -2,9 +2,8 @@
 import pandas as pd
 
 #from api_formatting import get_query
-from api_call import get_query
 from api_format import LinkedInAPIFormatter
-from plugin_io_utils import check_account_id 
+from api_call import get_query, check_account_id
 
 import dataiku
 from dataiku.customrecipe import (
