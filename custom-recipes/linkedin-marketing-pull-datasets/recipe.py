@@ -60,9 +60,9 @@ creatives_df = api_formatter.format_to_df()
 
 try:
     ids = creatives_df.id.values
+    creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000) 
 except AttributeError as e:
-    logging.info(e)
-    ids = None
+    creative_analytics = {"API_response":"No creatives - perhaps, decrease the batch size"}
 creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000)
 api_formatter = LinkedInAPIFormatter(creative_analytics)
 creative_analytics_df = api_formatter.format_to_df()
