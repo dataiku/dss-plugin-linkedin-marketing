@@ -52,11 +52,11 @@ api_formatter = LinkedInAPIFormatter(campaign_analytics)
 campaign_analytics_df = api_formatter.format_to_df()
 
 #creatives_df = get_query(HEADERS, filtered_campaign_ids,"CREATIVES", batch_size=100)
-#
+
 #creative_ids = creatives_df.id.values
 #creative_analytics_df = get_query(HEADERS, creative_ids, "CREATIVES_ANALYTICS", batch_size=100)
 #campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
-#
+
 ## ===============================================================================
 ## WRITE
 ## ===============================================================================
