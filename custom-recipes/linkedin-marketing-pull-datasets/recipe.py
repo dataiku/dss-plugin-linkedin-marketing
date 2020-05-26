@@ -63,10 +63,9 @@ try:
 except AttributeError as e:
     logging.info(e)
     ids = None
-    
 creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=creatives_df.id.values, batch_size = 1000)
-#api_formatter = LinkedInAPIFormatter(creative_analytics)
-#creative_analytics_df = api_formatter.format_to_df()
+api_formatter = LinkedInAPIFormatter(creative_analytics)
+creative_analytics_df = api_formatter.format_to_df()
 
 
 ## ===============================================================================
