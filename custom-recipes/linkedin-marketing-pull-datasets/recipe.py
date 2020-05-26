@@ -4,6 +4,7 @@ import pandas as pd
 #from api_formatting import get_query
 from api_call import get_query
 from api_format import LinkedInAPIFormatter
+from plugin_io_utils import check_account_id 
 
 import dataiku
 from dataiku.customrecipe import (
@@ -39,6 +40,8 @@ creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names)
 ## RUN
 ## ===============================================================================
 account = 507690462
+
+
 account = get_query(HEADERS, granularity = "ACCOUNT")
 api_formatter = LinkedInAPIFormatter(group)
 account_df = api_formatter.format_to_df()
