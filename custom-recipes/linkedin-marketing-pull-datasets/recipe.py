@@ -39,6 +39,7 @@ creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names)
 ## RUN
 ## ===============================================================================
 account = 507690462
+check_account_id(50769046)
 
 group = get_query(HEADERS,account_id = 50769046)
 api_formatter = LinkedInAPIFormatter(group)
@@ -60,7 +61,6 @@ creative_analytics = get_query(HEADERS, granularity= "CREATIVES_ANALYTICS", ids=
 api_formatter = LinkedInAPIFormatter(creative_analytics)
 creative_analytics_df = api_formatter.format_to_df()
 
-#creative_analytics_df = get_query(HEADERS, creative_ids, "CREATIVES_ANALYTICS", batch_size=100)
 
 ## ===============================================================================
 ## WRITE
