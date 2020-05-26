@@ -63,7 +63,8 @@
             "label": "Account Id",
             "description": "Id of the sponsored account : requires at least one campaign and one creative",
             "type": "INT",
-            "mandatory": true
+            "mandatory": true,
+            "defaultValue":507690462
         }
     ],
 
