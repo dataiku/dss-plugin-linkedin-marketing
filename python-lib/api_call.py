@@ -18,7 +18,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
         batch_size       Number of ids by batch query (ex - 100)
 
     Outputs: 
-        query_output     Output of the API call with the appropriate contents, for ex- dateRange, impressions... 
+        query_output     Output of the API call with the appropriate content, for ex- dateRange, impressions... 
     """
 
     initial_param = {"ACCOUNT":{"q": "search"},"GROUP": {"q": "search","search.account.values[0]":"urn:li:sponsoredAccount:"+str(account_id)}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
@@ -51,7 +51,7 @@ def query(headers: dict, parameters: dict, granularity: str) -> dict():
         granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
 
     Outputs: 
-        query_output               A Pandas dataframe containing the data from the LinkedIn Api 
+        query_output     Output of the API call with the appropriate content, for ex- dateRange, impressions... 
     """
     url = {"ACCOUNT":"https://api.linkedin.com/v2/adAccountsV2","GROUP": "https://api.linkedin.com/v2/adCampaignGroupsV2", "CAMPAIGN": "https://api.linkedin.com/v2/adCampaignsV2/", "CAMPAIGN_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2",
            "CREATIVES": "https://api.linkedin.com/v2/adCreativesV2/", "CREATIVES_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2"}
@@ -83,7 +83,7 @@ def get_analytics_parameters(ids: list(), granularity: str) -> dict:
     return params
 
 
-def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, initial_params: dict) -> list():
+def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, initial_params: dict) -> dict():
     """
     Perfom a batch get query 
 
@@ -91,7 +91,7 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
         batch_size       Number of ids by batch query (ex - 100)
         ids              Ids of the queried entities  (campaign ids, group ids...)
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
         initial_params   Default parameters for the query. For ex -  q: search
 
     Outputs: 
