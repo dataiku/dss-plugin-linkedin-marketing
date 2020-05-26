@@ -113,7 +113,7 @@ def check_input_values(account_id:int,headers:dict):
     account = get_query(headers, granularity = "ACCOUNT")
     try:
         account["serviceErrorCode"]
-        raise ValueError(account)
+        raise ValueError(str(account))
     except:
         api_formatter = LinkedInAPIFormatter(account)
         account_df = api_formatter.format_to_df()
