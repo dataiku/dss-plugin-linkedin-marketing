@@ -4,7 +4,7 @@ import logging
 
 #from api_formatting import get_query
 from api_format import LinkedInAPIFormatter
-from api_call import get_query, check_input_values
+from api_call import get_query, check_input_values,filter_query
 
 import dataiku
 from dataiku.customrecipe import (
