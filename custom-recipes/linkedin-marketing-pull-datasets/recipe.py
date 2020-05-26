@@ -3,7 +3,7 @@ import pandas as pd
 
 #from api_formatting import get_query
 from api_format import LinkedInAPIFormatter
-from api_call import get_query, check_account_id
+from api_call import get_query, check_input_values
 
 import dataiku
 from dataiku.customrecipe import (
