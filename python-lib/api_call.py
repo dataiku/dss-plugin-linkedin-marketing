@@ -114,5 +114,5 @@ def check_account_id(account_id:int,headers:dict):
     api_formatter = LinkedInAPIFormatter(group)
     account_df = api_formatter.format_to_df()
     if account_id not in account_df.id.values:
-        raise Exception("Wrong account id or not accessible with the current access token")
+        raise ValueError("Wrong account id or not accessible with the current access token")
 
