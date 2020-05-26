@@ -89,7 +89,7 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
         ids              Ids of the queried entities  (campaign ids, group ids...)
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        initial_params   Fefault parameters for the query. For ex -  q: search
+        initial_params   Default parameters for the query. For ex -  q: search
 
     Outputs: 
         query_output     Output of the API call with the appropriate contents, for ex- dateRange, impressions... 
