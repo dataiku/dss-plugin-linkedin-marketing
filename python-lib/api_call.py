@@ -2,6 +2,7 @@ import requests
 import numpy as np
 from math import ceil
 import logging
+from api_format import LinkedInAPIFormatter
 
 
 def get_query(headers: dict, granularity: str = "GROUP", account_id : int=0, ids: list() = [], batch_size: int = 1000) -> list():
@@ -106,4 +107,12 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
             logging.info(e)
             query_output["exceptions"].extend([{"id":id,"API_response":query(headers,params,granularity)} for id in batch])
     return query_output
+
+
+def check_account_id(account_id:int):
+    account = get_query(HEADERS, granularity = "ACCOUNT")
+    api_formatter = LinkedInAPIFormatter(group)
+    account_df = api_formatter.format_to_df()
+    if account_id not in account_df.id.values:
+        raise Exception("Wrong account id or not accessible with the current access token")
 
