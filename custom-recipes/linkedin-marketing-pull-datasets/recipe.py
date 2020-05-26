@@ -44,7 +44,7 @@ api_formatter = LinkedInAPIFormatter(group_query)
 campaign_groups_df = api_formatter.format_to_df()
 
 campaign_query = get_query(HEADERS, granularity= "CAMPAIGN", ids=campaign_groups_df.id.values)
-api_formatter = LinkedInAPIFormatter(group_query)
+api_formatter = LinkedInAPIFormatter(campaign_query)
 campaigns_df = api_formatter.format_to_df()
 
 #groups = list(set(campaigns_df.campaignGroup.values))
