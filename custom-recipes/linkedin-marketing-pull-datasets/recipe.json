@@ -65,7 +65,16 @@
             "type": "INT",
             "mandatory": true,
             "defaultValue":507690462
+        }, 
+        {
+            "name": "batch_size",
+            "label": "Batch size",
+            "description": "Number of ids per batch query. When you have the API raises a error 400 : too many entities, you should decrease the batch size",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue":50
         }
+        
     ],
 
     "resourceKeys": []
