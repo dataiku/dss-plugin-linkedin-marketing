@@ -4,21 +4,21 @@ from math import ceil
 import logging
 
 
-def get_query(headers: dict, granularity: str = "GROUP",ids: list() = [], batch_size: int = 1000) -> list():
+def get_query(headers: dict, granularity: str = "GROUP", account_id : int=0, ids: list() = [], batch_size: int = 1000) -> list():
     """
     Perfom a Get query and return the data related to the creative or campaign ids given. When the query is too voluminous, lower the batch size to perform a batch query. 
 
     Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        ids              List of campaign groups, campaigns or creative ids - ex : [601956786, 602189436] for campaign groups
         granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        ids              List of campaign groups, campaigns or creative ids - ex : [601956786, 602189436] for campaign groups
         batch_size       Number of ids by batch query (ex - 100)
 
     Outputs: 
         query_output     Output of the API call with the appropriate contents, for ex- dateRange, impressions... 
     """
 
-    initial_param = {"GROUP": {"q": "search"}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
+    initial_param = {"GROUP": {"q": "search","search.account.values[0]":"urn:li:sponsoredAccount:"+str(account_id)}, "CAMPAIGN": {"q": "search"}, "CREATIVES": {"q": "search"}, "CAMPAIGN_ANALYTICS": {"q": "analytics", "pivot": "CAMPAIGN", "dateRange.start.day": "1",
                                                                                                                                  "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}, "CREATIVES_ANALYTICS": {"q": "analytics", "pivot": "CREATIVE", "dateRange.start.day": "1", "dateRange.start.month": "1", "dateRange.start.year": "2006", "timeGranularity": "DAILY"}}
 
     try:
