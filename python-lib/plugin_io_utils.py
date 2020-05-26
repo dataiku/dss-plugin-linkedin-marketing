@@ -1,5 +1,5 @@
 from api_call import get_query
-from api_format import LinkedInAPIFormatter
+#from api_format import LinkedInAPIFormatter
 
 
 def build_column_names(query:dict)->list():
