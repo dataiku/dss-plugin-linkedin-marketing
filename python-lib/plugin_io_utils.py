@@ -1,5 +1,5 @@
 from api_call import get_query
-#from api_format import LinkedInAPIFormatter
+from api_format import LinkedInAPIFormatter
 
 
 def build_column_names(query:dict)->list():
@@ -9,6 +9,7 @@ def build_column_names(query:dict)->list():
     except KeyError:
         column_names = ["API_response"]
     return column_names
+
 
 def check_account_id(account_id:int):
     account = get_query(HEADERS, granularity = "ACCOUNT")
