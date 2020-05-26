@@ -55,11 +55,12 @@ def query(headers: dict, parameters: dict, granularity: str) -> dict():
     """
     url = {"ACCOUNT":"https://api.linkedin.com/v2/adAccountsV2","GROUP": "https://api.linkedin.com/v2/adCampaignGroupsV2", "CAMPAIGN": "https://api.linkedin.com/v2/adCampaignsV2/", "CAMPAIGN_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2",
            "CREATIVES": "https://api.linkedin.com/v2/adCreativesV2/", "CREATIVES_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2"}
-
-    query = requests.get(url=url[granularity],
-                         headers=headers, params=parameters)
-    query_output = query.json()
-    return query.json()
+    
+    query = requests.get(url=url[granularity],headers=headers, params=parameters)
+    if ids:
+        return query.json()
+    else:
+        return {"API_response":query}
 
 
 def get_analytics_parameters(ids: list(), granularity: str) -> dict:
