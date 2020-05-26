@@ -12,7 +12,7 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
 
     Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
         account_id       ID of the sponsored ad account 
         ids              List of campaign groups, campaigns or creative ids to filter the query - ex : [601956786, 602189436] for campaign groups
         batch_size       Number of ids by batch query (ex - 100)
@@ -43,12 +43,12 @@ def get_query(headers: dict, granularity: str, account_id : int=0, ids: list() =
 
 def query(headers: dict, parameters: dict, granularity: str) -> dict():
     """
-    Retrieve a dataframe with data pulled from the API
+    Retrieve a json with data pulled from the API
 
     Inputs:
         parameters       Parameters needed for the get query
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
 
     Outputs: 
         query_output               A Pandas dataframe containing the data from the LinkedIn Api 
