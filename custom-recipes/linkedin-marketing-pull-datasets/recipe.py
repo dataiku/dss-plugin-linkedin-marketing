@@ -27,20 +27,6 @@ print("**********************")
 print(get_output_names_for_role("campaign_group_dataset"))
 print(get_output_names_for_role("campaign_dataset"))
 
-groups_name = get_output_names_for_role("campaign_group_dataset")[0]
-groups_dataset = dataiku.Dataset(groups_name)
-
-campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
-campaigns_dataset = dataiku.Dataset(campaigns_names)
-
-creatives_names =  get_output_names_for_role("creative_dataset")[0]
-creatives_dataset = dataiku.Dataset(creatives_names) 
-
-campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
-campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
-
-creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
-creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
 
 ## ===============================================================================
 ## RUN
@@ -70,11 +56,32 @@ creative_analytics_df = api_formatter.format_to_df()
 ## ===============================================================================
 ## WRITE
 ## ===============================================================================
+if get_output_names_for_role("campaign_group_dataset"):
+    groups_name = get_output_names_for_role("campaign_group_dataset")[0]
+    groups_dataset = dataiku.Dataset(groups_name)
+    groups_dataset.write_with_schema(campaign_groups_df)
 
-groups_dataset.write_with_schema(campaign_groups_df)
-campaigns_dataset.write_with_schema(campaigns_df)
-campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
-creatives_dataset.write_with_schema(creatives_df)
-creatives_analytics_dataset.write_with_schema(creative_analytics_df)
+if get_output_names_for_role("campaign_dataset"):
+    campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
+    campaigns_dataset = dataiku.Dataset(campaigns_names)
+    campaigns_dataset.write_with_schema(campaigns_df)
+
+if get_output_names_for_role("creative_dataset"):
+    creatives_names =  get_output_names_for_role("creative_dataset")[0]
+    creatives_dataset = dataiku.Dataset(creatives_names)
+    creatives_dataset.write_with_schema(creatives_df)
+
+if get_output_names_for_role("campaign_analytics_dataset"):
+    campaigns_analytics_names =  get_output_names_for_role("campaign_analytics_dataset")[0]
+    campaign_analytics_dataset = dataiku.Dataset(campaigns_analytics_names) 
+    campaign_analytics_dataset.write_with_schema(campaign_analytics_df)
+
+if get_output_names_for_role("creatives_analytics_dataset"):
+    creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
+    creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
+    creatives_analytics_dataset.write_with_schema(creative_analytics_df
+
+
+
 
 
