@@ -38,7 +38,7 @@ campaign_analytics = filter_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", mo
 api_formatter = LinkedInAPIFormatter(campaign_analytics)
 campaign_analytics_df = api_formatter.format_to_df()
 
-creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 100)
+creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 50)
 api_formatter = LinkedInAPIFormatter(creative)
 creatives_df = api_formatter.format_to_df()
 
