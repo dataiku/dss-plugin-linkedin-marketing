@@ -1,0 +1,46 @@
+{
+    "meta": {
+        "label": "Authorization Code Flow (3-legged OAuth)",
+        "description": "",
+        "icon": "icon-linkedin"
+    },
+    "defaultDefinableInline": false,
+    "defaultDefinableAtProjectLevel": true,
+    "pluginParams": [],
+    "params": [
+        {
+            "name": "linkedin-oauth",
+            "type": "CREDENTIAL_REQUEST",
+            "label": "Authorization Code Flow",
+            "credentialRequestSettings": {
+                "type": "OAUTH2",
+                "authorizationEndpoint": "https://www.linkedin.com/oauth/v2/authorization",
+                "tokenEndpoint": "https://www.linkedin.com/oauth/v2/accessToken",
+                "scope": "r_ads_reporting%20r_ads",
+                "response_type":"code"
+            },
+            "mandatory": true
+        },
+        {
+            "name": "client_id",
+            "label": "client_id",
+            "type": "STRING",
+            "description": "The API Key value generated when you registered your application.",
+            "mandatory": true
+        },
+        {
+            "name": "redirect_uri",
+            "label": "redirect_uri",
+            "type": "STRING",
+            "description": "The URI your users are sent back to after authorization. This value must match one of the OAuth 2.0 Authorized Redirect URLs defined in your application configuration. For example, https://www.example.com/auth/linkedin.",
+            "mandatory": true
+        },
+        {
+            "name": "state",
+            "label": "state",
+            "type": "STRING",
+            "description": "A unique string value of your choice that is hard to guess. Used to prevent CSRF. For example, state=DCEeFWf45A53sdfKef424.",
+            "mandatory": true
+        }
+    ]
+}
