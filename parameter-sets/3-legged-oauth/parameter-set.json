@@ -21,6 +21,13 @@
             },
             "mandatory": true
         },
+                {
+            "name": "client_id",
+            "label": "client_id",
+            "type": "STRING",
+            "description": "The API Key value generated when you registered your application.",
+            "mandatory": true
+        },
         {
             "name": "state",
             "label": "state",
