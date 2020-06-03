@@ -131,7 +131,7 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
             query_output["elements"].extend(query(headers,params,granularity)["elements"])
         except KeyError as e:
             logging.info(e)
-            query_output["exceptions"].extend([{"id":id,"API_response":query(headers,params,granularity)} for id in chunks])
+            query_output["exceptions"].extend("API_response":query(headers,params,granularity)})
             break
     return query_output
 
