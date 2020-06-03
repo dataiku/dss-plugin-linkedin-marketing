@@ -6,7 +6,7 @@ def build_column_names(query:dict)->list():
         else:
             column_names = []
     except KeyError:
-        column_names = ["API_response","id"]
+        column_names = ["API_response"]
     return column_names
 
 
