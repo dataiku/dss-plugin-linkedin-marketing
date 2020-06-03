@@ -20,6 +20,7 @@ if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_token")} 
 account_id = get_recipe_config().get("account_id")
+batch_size = account_id = get_recipe_config().get("batch_size")
 check_input_values(account_id,HEADERS)
 
 ## ===============================================================================
@@ -40,7 +41,7 @@ if get_output_names_for_role("campaign_analytics_dataset"):
     campaign_analytics_df = api_formatter.format_to_df()
 
 if get_output_names_for_role("creatives_analytics_dataset") or get_output_names_for_role("creatives_analytics_dataset"):
-    creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 500)
+    creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = batch_size)
     api_formatter = LinkedInAPIFormatter(creative)
     creatives_df = api_formatter.format_to_df()
 
