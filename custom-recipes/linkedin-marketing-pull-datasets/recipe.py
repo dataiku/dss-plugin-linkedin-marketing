@@ -31,9 +31,10 @@ group = get_query(HEADERS,granularity= "GROUP",account_id = account_id)
 api_formatter = LinkedInAPIFormatter(group)
 campaign_groups_df = api_formatter.format_to_df()
 
-campaign = filter_query(HEADERS, granularity= "CAMPAIGN", mother=campaign_groups_df)
-api_formatter = LinkedInAPIFormatter(campaign)
-campaigns_df = api_formatter.format_to_df()
+if get_output_names_for_role("campaign_dataset") or get_output_names_for_role("campaign_analytics_dataset") or get_output_names_for_role("creatives_analytics_dataset") or get_output_names_for_role("creatives_analytics_dataset"):
+    campaign = filter_query(HEADERS, granularity= "CAMPAIGN", mother=campaign_groups_df)
+    api_formatter = LinkedInAPIFormatter(campaign)
+    campaigns_df = api_formatter.format_to_df()
 
 if get_output_names_for_role("campaign_analytics_dataset"):
     campaign_analytics = filter_query(HEADERS, granularity= "CAMPAIGN_ANALYTICS", mother =campaigns_df)
