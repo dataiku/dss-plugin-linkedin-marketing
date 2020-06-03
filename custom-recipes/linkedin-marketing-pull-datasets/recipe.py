@@ -55,6 +55,7 @@ if get_output_names_for_role("creatives_analytics_dataset"):
 ## ===============================================================================
 ## WRITE
 ## ===============================================================================
+
 if get_output_names_for_role("campaign_group_dataset"):
     groups_name = get_output_names_for_role("campaign_group_dataset")[0]
     groups_dataset = dataiku.Dataset(groups_name)
