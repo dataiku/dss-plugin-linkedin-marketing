@@ -149,7 +149,7 @@ def check_input_values(account_id:int,headers:dict):
         api_formatter = LinkedInAPIFormatter(account)
         account_df = api_formatter.format_to_df()
         if account_id not in account_df.id.values:
-            raise ValueError("Wrong account id or you don't have the permission to access this account"+str(account))
+            raise ValueError("Wrong account id or you don't have the permission to access this account")
         
 
 
