@@ -22,13 +22,6 @@
             "mandatory": true
         },
         {
-            "name": "redirect_uri",
-            "label": "redirect_uri",
-            "type": "STRING",
-            "description": "The URI your users are sent back to after authorization. This value must match one of the OAuth 2.0 Authorized Redirect URLs defined in your application configuration. For example, https://www.example.com/auth/linkedin.",
-            "mandatory": true
-        },
-        {
             "name": "state",
             "label": "state",
             "type": "STRING",
