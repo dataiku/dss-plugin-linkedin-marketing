@@ -23,6 +23,10 @@ HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_to
 account_id = get_recipe_config().get("account_id")
 check_input_values(account_id,HEADERS)
 
+print("**********************")
+print(get_output_names_for_role("campaign_group_dataset"))
+print(get_output_names_for_role("campaign_dataset"))
+
 groups_name = get_output_names_for_role("campaign_group_dataset")[0]
 groups_dataset = dataiku.Dataset(groups_name)
 
@@ -47,7 +51,6 @@ api_formatter = LinkedInAPIFormatter(group)
 campaign_groups_df = api_formatter.format_to_df()
 
 campaign = filter_query(HEADERS, granularity= "CAMPAIGN", mother=campaign_groups_df)
-print(campaign)
 api_formatter = LinkedInAPIFormatter(campaign)
 campaigns_df = api_formatter.format_to_df()
 
