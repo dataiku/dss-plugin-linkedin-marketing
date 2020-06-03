@@ -16,7 +16,7 @@
                 "type": "OAUTH2",
                 "authorizationEndpoint": "https://www.linkedin.com/oauth/v2/authorization",
                 "tokenEndpoint": "https://www.linkedin.com/oauth/v2/accessToken",
-                "scope": "r_ads_reporting%20r_ads",
+                "scope": "r_ads", 
                 "response_type":"code"
             },
             "mandatory": true
