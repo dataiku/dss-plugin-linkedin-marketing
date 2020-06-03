@@ -39,9 +39,10 @@ if get_output_names_for_role("campaign_analytics_dataset"):
     api_formatter = LinkedInAPIFormatter(campaign_analytics)
     campaign_analytics_df = api_formatter.format_to_df()
 
-creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 500)
-api_formatter = LinkedInAPIFormatter(creative)
-creatives_df = api_formatter.format_to_df()
+if get_output_names_for_role("creatives_analytics_dataset") or get_output_names_for_role("creatives_analytics_dataset"):
+    creative = filter_query(HEADERS, granularity= "CREATIVES", mother =campaigns_df, batch_size = 500)
+    api_formatter = LinkedInAPIFormatter(creative)
+    creatives_df = api_formatter.format_to_df()
 
 if get_output_names_for_role("creatives_analytics_dataset"):
     creative_analytics = filter_query(HEADERS, granularity= "CREATIVES_ANALYTICS", mother=creatives_df, batch_size = 50) 
