@@ -2,7 +2,6 @@
 import pandas as pd
 import logging
 
-#from api_formatting import get_query
 from api_format import LinkedInAPIFormatter
 from api_call import get_query, check_input_values,filter_query
 
@@ -22,11 +21,6 @@ if api_configuration_preset is None or api_configuration_preset == {}:
 HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_token")} 
 account_id = get_recipe_config().get("account_id")
 check_input_values(account_id,HEADERS)
-
-print("**********************")
-print(get_output_names_for_role("campaign_group_dataset"))
-print(get_output_names_for_role("campaign_dataset"))
-
 
 ## ===============================================================================
 ## RUN
@@ -79,9 +73,4 @@ if get_output_names_for_role("campaign_analytics_dataset"):
 if get_output_names_for_role("creatives_analytics_dataset"):
     creatives_analytics_names =  get_output_names_for_role("creatives_analytics_dataset")[0]
     creatives_analytics_dataset = dataiku.Dataset(creatives_analytics_names) 
-    creatives_analytics_dataset.write_with_schema(creative_analytics_df
-
-
-
-
-
+    creatives_analytics_dataset.write_with_schema(creative_analytics_df)
