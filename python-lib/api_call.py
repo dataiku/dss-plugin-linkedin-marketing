@@ -128,11 +128,11 @@ def batch_query(batch_size: int, ids: list(), headers: dict, granularity: str, i
         params = {**initial_params, **
                   get_analytics_parameters(batch, granularity)}
         try:
-            batch_content = query(headers,params,granularity)["elements"]
-            query_output["elements"].extend(batch_content)
+            query_output["elements"].extend(query(headers,params,granularity)["elements"])
         except KeyError as e:
             logging.info(e)
-            query_output["exceptions"].extend([{"id":id,"API_response":query(headers,params,granularity)} for id in batch])
+            query_output["exceptions"].extend([{"id":id,"API_response":query(headers,params,granularity)} for id in chunks])
+            break
     return query_output
 
 
