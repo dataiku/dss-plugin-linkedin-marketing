@@ -51,12 +51,10 @@
     ],
 
     "params": [
-         {
-            "name": "api_configuration_preset",
-            "label": "API configuration preset",
-            "type": "PRESET",
-            "parameterSetId": "api-configuration",
-            "mandatory": true
+        {
+            "name": "separator_input",
+            "label": "Input parameter",
+            "type": "SEPARATOR"
         },
         {
             "name": "account_id",
@@ -66,13 +64,26 @@
             "mandatory": true,
             "defaultValue":507690462
         }, 
-        {
+                {
             "name": "batch_size",
             "label": "Batch size",
             "description": "Number of ids per batch query. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
             "type": "INT",
             "mandatory": true,
             "defaultValue":50
+        },
+        {
+            "name": "separator_config",
+            "label": "Configuration",
+            "type": "SEPARATOR"
+        },
+
+         {
+            "name": "api_configuration_preset",
+            "label": "API configuration preset",
+            "type": "PRESET",
+            "parameterSetId": "api-configuration",
+            "mandatory": true
         }
         
     ],
