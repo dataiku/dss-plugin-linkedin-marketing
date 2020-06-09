@@ -85,15 +85,13 @@
             "parameterSetId": "linkedin-token",
             "visibilityCondition" : "model.authentication_method == 'token'"
         },
-
-         {
-            "name": "api_configuration_preset",
-            "label": "API configuration preset",
+        {
+            "name": "linkedin-oauth",
+            "label": "Oauth2",
             "type": "PRESET",
-            "parameterSetId": "api-configuration",
-            "mandatory": false
-        },
-        
+            "parameterSetId": "3-legged-oauth",
+            "visibilityCondition" : "model.authentication_method == 'oauth'"
+        },  
         {
             "type": "SELECT",
             "name": "authentication_method",
