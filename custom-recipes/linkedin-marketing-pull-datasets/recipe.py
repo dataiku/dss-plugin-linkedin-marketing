@@ -21,8 +21,8 @@ api_configuration_preset = config.get("authentication_method")
 if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 print("****************")
-print(config.get('linkedin-token'))
-HEADERS = {"authorization" : "Bearer " + config.get('linkedin-token').get("access_token")} 
+print(config.get('authentication_method'))
+HEADERS = {"authorization" : "Bearer " + config.get('authentication_method')["linkedin-token"].get("access_token")} 
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
 check_input_values(account_id,HEADERS)
