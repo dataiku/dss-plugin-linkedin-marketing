@@ -23,7 +23,7 @@ if authentication_method == "token":
     if config.get('linkedin_access_token'):
         HEADERS = {"authorization" : "Bearer " + config.get('linkedin_access_token')["access_token"]} 
     else:
-        raise ValueError("Please specify an API configuration preset")
+        raise ValueError("Please specify an access token")
 elif authentication_method == "oauth":
     try:
         access_token = config.get('linkedin-oauth')['linkedin-oauth']
