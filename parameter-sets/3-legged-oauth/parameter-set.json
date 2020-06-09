@@ -20,13 +20,6 @@
                 "response_type":"code"
             },
             "mandatory": true
-        },
-        {
-            "name": "state",
-            "label": "state",
-            "type": "STRING",
-            "description": "A unique string value of your choice that is hard to guess. Used to prevent CSRF. For example, state=DCEeFWf45A53sdfKef424.",
-            "mandatory": false
         }
     ]
 }
