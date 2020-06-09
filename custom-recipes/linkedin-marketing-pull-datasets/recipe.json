@@ -77,13 +77,32 @@
             "label": "Configuration",
             "type": "SEPARATOR"
         },
+        
+        {
+            "name": "linkedin_access_token",
+            "label": "Access token",
+            "type": "PRESET",
+            "parameterSetId": "linkedin-token",
+            "visibilityCondition" : "model.authentication_method == 'token'"
+        },
 
          {
             "name": "api_configuration_preset",
             "label": "API configuration preset",
             "type": "PRESET",
             "parameterSetId": "api-configuration",
-            "mandatory": true
+            "mandatory": false
+        },
+        
+        {
+            "type": "SELECT",
+            "name": "authentication_method",
+            "label": "Authentication method",
+            "selectChoices": [
+                { "value": "token", "label": "Access token"}
+            ],
+            "mandatory": true,
+            "defaultValue": "token"
         }
         
     ],
