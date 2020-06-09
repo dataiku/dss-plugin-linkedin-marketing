@@ -78,6 +78,18 @@
             "type": "SEPARATOR"
         },
         
+                {
+            "type": "SELECT",
+            "name": "authentication_method",
+            "label": "Authentication method",
+            "selectChoices": [
+                { "value": "token", "label": "Access token"},
+                { "value": "oauth", "label": "OAuth"}
+            ],
+            "mandatory": true,
+            "defaultValue": "token"
+        },
+        
         {
             "name": "linkedin_access_token",
             "label": "Access token",
@@ -91,17 +103,6 @@
             "type": "PRESET",
             "parameterSetId": "3-legged-oauth",
             "visibilityCondition" : "model.authentication_method == 'oauth'"
-        },  
-        {
-            "type": "SELECT",
-            "name": "authentication_method",
-            "label": "Authentication method",
-            "selectChoices": [
-                { "value": "token", "label": "Access token"},
-                { "value": "oauth", "label": "OAuth"}
-            ],
-            "mandatory": true,
-            "defaultValue": "token"
         }
         
     ],
