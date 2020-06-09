@@ -20,7 +20,10 @@ config = get_recipe_config()
 authentication_method = config.get("authentication_method")
 
 if authentication_method == "token":
-    HEADERS = {"authorization" : "Bearer " + config.get('linkedin_access_token')["access_token"]} 
+    if config.get('linkedin_access_token'):
+        HEADERS = {"authorization" : "Bearer " + config.get('linkedin_access_token')["access_token"]} 
+    else:
+        ValueError("Please specify an API configuration preset")
 elif authentication_method == "oauth":
     try:
         access_token = config.get('linkedin-oauth')['linkedin-oauth']
