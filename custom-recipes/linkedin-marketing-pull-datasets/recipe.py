@@ -15,12 +15,14 @@ from dataiku.customrecipe import (
 # ==============================================================================
 # SETUP
 # ==============================================================================
-api_configuration_preset = get_recipe_config().get("api_configuration_preset")
+config = get_recipe_config()
+#api_configuration_preset = get_recipe_config().get("api_configuration_preset")
+api_configuration_preset = config.get("authentication_method")
 if api_configuration_preset is None or api_configuration_preset == {}:
     raise ValueError("Please specify an API configuration preset")
 HEADERS = {"authorization" : "Bearer " + api_configuration_preset.get("access_token")} 
-account_id = get_recipe_config().get("account_id")
-batch_size = get_recipe_config().get("batch_size")
+account_id = config.get("account_id")
+batch_size = config.get("batch_size")
 check_input_values(account_id,HEADERS)
 
 ## ===============================================================================
