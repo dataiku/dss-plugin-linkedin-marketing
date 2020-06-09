@@ -99,7 +99,8 @@
             "name": "authentication_method",
             "label": "Authentication method",
             "selectChoices": [
-                { "value": "token", "label": "Access token"}
+                { "value": "token", "label": "Access token"},
+                { "value": "oauth", "label": "OAuth"}
             ],
             "mandatory": true,
             "defaultValue": "token"
