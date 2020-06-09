@@ -87,7 +87,8 @@
                 { "value": "oauth", "label": "OAuth"}
             ],
             "mandatory": true,
-            "defaultValue": "token"
+            "defaultValue": "token",
+            "visibilityCondition" : false
         },
         
         {
