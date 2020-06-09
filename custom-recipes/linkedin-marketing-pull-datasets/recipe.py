@@ -16,13 +16,20 @@ from dataiku.customrecipe import (
 # SETUP
 # ==============================================================================
 config = get_recipe_config()
-#api_configuration_preset = get_recipe_config().get("api_configuration_preset")
-api_configuration_preset = config.get("authentication_method")
-if api_configuration_preset is None or api_configuration_preset == {}:
-    raise ValueError("Please specify an API configuration preset")
-print("****************")
-print(config.get('authentication_method'))
-HEADERS = {"authorization" : "Bearer " + config.get('linkedin_access_token')["access_token"]} 
+
+authentication_method = config.get("authentication_method")
+
+if authentication_method == "token":
+    HEADERS = {"authorization" : "Bearer " + config.get('linkedin_access_token')["access_token"]} 
+elif authentication_method == "oauth":
+    try:
+        access_token = config.get('linkedin-oauth')['linkedin-oauth']
+        HEADERS = {'Authorization': 'Bearer ' + access_token}
+    except Exception as err:
+        logger.error("ERROR [-] Error while reading your LinkedIn access token from Project Variables")
+        logger.error(str(err))
+        raise Exception("Authentication error")
+        
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
 check_input_values(account_id,HEADERS)
