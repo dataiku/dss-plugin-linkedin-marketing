@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
-import logging
-
 from api_format import LinkedInAPIFormatter
 from api_call import get_query, check_input_values,filter_query
 
