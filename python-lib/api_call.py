@@ -158,4 +158,3 @@ def check_input_values(account_id: int, headers: dict):
         if account_id not in account_df.id.values:
             raise ValueError(
                 "Wrong account id or you don't have the permission to access this account")
-
