@@ -147,7 +147,7 @@ def check_input_values(account_id: int, headers: dict):
     """
     Check if the account and the access tokens are valid
     headers          Headers of the GET query, containing the access token for the OAuth2 identification
-    account_id       ID of the sponsored ad account 
+    account_id       ID of the sponsored ad account
     """
     account = get_query(headers, granularity="ACCOUNT")
     if "serviceErrorCode" in account.keys():
