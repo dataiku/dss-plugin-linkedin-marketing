@@ -71,12 +71,12 @@ if get_output_names_for_role("campaign_group_dataset"):
     groups_dataset.write_with_schema(campaign_groups_df)
 
 if get_output_names_for_role("campaign_dataset"):
-    campaigns_names =  get_output_names_for_role("campaign_dataset")[0]
+    campaigns_names = get_output_names_for_role("campaign_dataset")[0]
     campaigns_dataset = dataiku.Dataset(campaigns_names)
     campaigns_dataset.write_with_schema(campaigns_df)
 
 if get_output_names_for_role("creative_dataset"):
-    creatives_names =  get_output_names_for_role("creative_dataset")[0]
+    creatives_names = get_output_names_for_role("creative_dataset")[0]
     creatives_dataset = dataiku.Dataset(creatives_names)
     creatives_dataset.write_with_schema(creatives_df)
 
