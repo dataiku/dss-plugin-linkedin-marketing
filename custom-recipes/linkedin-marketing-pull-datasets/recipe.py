@@ -31,8 +31,7 @@ elif authentication_method == "oauth":
     except Exception as err:
         logger.error("ERROR [-] Error while reading your LinkedIn access token from Project Variables")
         logger.error(str(err))
-        raise Exception("Authentication error")
-        
+        raise Exception("Authentication error")       
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
 check_input_values(account_id,HEADERS)
