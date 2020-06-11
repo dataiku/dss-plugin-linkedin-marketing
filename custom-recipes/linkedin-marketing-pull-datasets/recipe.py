@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from api_format import LinkedInAPIFormatter
 from api_call import get_query, check_input_values, filter_query
+import logging
 
 import dataiku
 from dataiku.customrecipe import (
