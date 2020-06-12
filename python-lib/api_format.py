@@ -21,10 +21,10 @@ class LinkedInAPIFormatter:
     def format_to_df(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=self.api_column_names)
         logging.info("Formatting API results...")
-        try:
-            if self.input_query["elements"]:
-                df = df.append(pd.DataFrame(self.input_query["elements"], columns=self.api_column_names))
-        except KeyError:
-            df = df.append(pd.DataFrame({"API_response": self.input_query}))
+        elements = self.input_query.get("elements", None)
+        if elements:
+            df = df.append(pd.DataFrame(self.input_query["elements"], columns=self.api_column_names))
+        else:
+            df = df.append(pd.DataFrame({"exception": self.input_query}))
         logging.info("Formatting API results: Done.")
         return df
