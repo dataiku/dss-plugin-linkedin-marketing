@@ -84,7 +84,7 @@ if get_output_names_for_role("campaign_dataset"):
 
 if get_output_names_for_role("creative_dataset"):
     creatives_names = get_output_names_for_role("creative_dataset")[0]
-    creatives_dataset =  dataiku.Dataset(creatives_names)
+    creatives_dataset = dataiku.Dataset(creatives_names)
     creatives_dataset.write_with_schema(creatives_df)
 
 if get_output_names_for_role("campaign_analytics_dataset"):
