@@ -28,4 +28,3 @@ class LinkedInAPIFormatter:
             df = df.append(pd.DataFrame({"API_response": self.input_query}))
         logging.info("Formatting API results: Done.")
         return df
- 
