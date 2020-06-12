@@ -1,6 +1,6 @@
 import pandas as pd
 import logging
-from plugin_io_utils import build_column_names 
+from plugin_io_utils import build_column_names
 
 
 class LinkedInAPIFormatter:
@@ -19,12 +19,13 @@ class LinkedInAPIFormatter:
         self.api_column_names = build_column_names(input_query)
 
     def format_to_df(self) -> pd.DataFrame:
-        df = pd.DataFrame(columns = self.api_column_names)
+        df = pd.DataFrame(columns=self.api_column_names)
         logging.info("Formatting API results...")
         try:
             if self.input_query["elements"]:
-                df = df.append(pd.DataFrame(self.input_query["elements"],columns=self.api_column_names))
+                df = df.append(pd.DataFrame(self.input_query["elements"], columns=self.api_column_names))
         except KeyError:
-            df = df.append(pd.DataFrame({"API_response":self.input_query}))
+            df = df.append(pd.DataFrame({"API_response": self.input_query}))
         logging.info("Formatting API results: Done.")
         return df
+ 
