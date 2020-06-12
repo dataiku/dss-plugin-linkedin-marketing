@@ -1,4 +1,4 @@
-def build_column_names(query:dict)->list():
+def build_column_names(query: dict) -> list():
     try:
         content_columns = query["elements"]
         if content_columns:
@@ -8,6 +8,4 @@ def build_column_names(query:dict)->list():
     except KeyError:
         column_names = ["API_response"]
     return column_names
-
-
 
