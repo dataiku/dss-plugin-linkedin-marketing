@@ -19,12 +19,14 @@ class LinkedInAPIFormatter:
         self.api_column_names = build_column_names(input_query)
 
     def format_to_df(self) -> pd.DataFrame:
+        logger = logging.getLogger()
+        logging.basicConfig(level=logging.INFO, format='LinkedIn Marketing plugin %(levelname)s - %(message)s')
         df = pd.DataFrame(columns=self.api_column_names)
-        logging.info("Formatting API results...")
+        logger.info("Formatting API results...")
         elements = self.input_query.get("elements", None)
         if elements:
             df = df.append(pd.DataFrame(self.input_query["elements"], columns=self.api_column_names))
         else:
             df = df.append(pd.DataFrame({"exception": self.input_query}))
-        logging.info("Formatting API results: Done.")
+        logger.info("Formatting API results: Done.")
         return df

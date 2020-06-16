@@ -6,6 +6,9 @@ import logging
 from datetime import datetime
 from api_format import LinkedInAPIFormatter
 
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO, format='LinkedIn Marketing plugin %(levelname)s - %(message)s')
+
 
 def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict():
     """
@@ -26,7 +29,7 @@ def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_si
         ids = mother.id.values
         response = get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
     except AttributeError as e:
-        logging.info(e)
+        logger.info(e)
         response = {"API_response": "No relevant output - perhaps, decrease the batch size"}
     return response
 
@@ -203,7 +206,7 @@ def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date:
     try:
         initial_param[granularity]
     except KeyError as e:
-        logging.error(e)
+        logger.error(e)
         raise ValueError(
             "Granularity value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
 

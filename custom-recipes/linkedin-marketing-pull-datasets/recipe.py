@@ -14,8 +14,9 @@ from dataiku.customrecipe import (
 # SETUP
 # ==============================================================================
 config = get_recipe_config()
-
 authentication_method = config.get("authentication_method")
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO, format='LinkedIn Marketing plugin %(levelname)s - %(message)s')
 
 if authentication_method == "token":
     if config.get('linkedin_access_token'):
@@ -28,9 +29,9 @@ elif authentication_method == "oauth":
         access_token = config.get('linkedin-oauth')['linkedin-oauth']
         HEADERS = {'Authorization': 'Bearer ' + access_token}
     except Exception as err:
-        logging.error(
+        logger.error(
             "ERROR [-] Error while reading your LinkedIn access token from Project Variables")
-        logging.error(str(err))
+        logger.error(str(err))
         raise Exception("Authentication error")
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
