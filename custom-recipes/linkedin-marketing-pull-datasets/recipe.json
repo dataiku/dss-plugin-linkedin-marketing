@@ -4,9 +4,7 @@
         "description": "Pull campaign groups, campaigns, creatives, campaign analytics and creative analytrics from the LinkedIn API",
         "icon": "icon-linkedin"
     },
-
     "kind": "PYTHON",
-
     "outputRoles": [
         {
             "name": "campaign_group_dataset",
@@ -49,7 +47,6 @@
             "acceptsDataset": true
         }
     ],
-
     "params": [
         {
             "name": "separator_input",
@@ -62,52 +59,85 @@
             "description": "Id of the sponsored account. To retrieve all the tables, the account should contain at least one campaign and one creative",
             "type": "INT",
             "mandatory": true,
-            "defaultValue":507690462
-        }, 
+            "defaultValue": 507690462
+        },
+        {
+            "type": "SELECT",
+            "name": "date_manager",
+            "label": "Choose a timeline",
+            "selectChoices": [
                 {
+                    "value": "everyday",
+                    "label": "All time"
+                },
+                {
+                    "value": "timerange",
+                    "label": "Time range"
+                }
+            ],
+            "mandatory": true,
+            "defaultValue": "everyday",
+            "visibilityCondition": true
+        },
+        {
+            "type": "DATE",
+            "name": "start",
+            "label": "Start date",
+            "parameterSetId": "start-date",
+            "visibilityCondition": "model.date_manager == 'timerange'"
+        },
+        {
+            "type": "DATE",
+            "name": "end",
+            "label": "End date",
+            "parameterSetId": "end-date",
+            "visibilityCondition": "model.date_manager == 'timerange'"
+        },
+        {
             "name": "batch_size",
             "label": "Batch size",
             "description": "Number of ids per batch query. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
             "type": "INT",
             "mandatory": true,
-            "defaultValue":50
+            "defaultValue": 50
         },
         {
             "name": "separator_config",
             "label": "Configuration",
             "type": "SEPARATOR"
         },
-        
-                {
+        {
             "type": "SELECT",
             "name": "authentication_method",
             "label": "Authentication method",
             "selectChoices": [
-                { "value": "token", "label": "Access token"},
-                { "value": "oauth", "label": "OAuth"}
+                {
+                    "value": "token",
+                    "label": "Access token"
+                },
+                {
+                    "value": "oauth",
+                    "label": "OAuth"
+                }
             ],
             "mandatory": true,
             "defaultValue": "token",
-            "visibilityCondition" : false
+            "visibilityCondition": false
         },
-        
         {
             "name": "linkedin_access_token",
             "label": "Access token",
             "type": "PRESET",
             "parameterSetId": "linkedin-token",
-            "visibilityCondition" : "model.authentication_method == 'token'"
+            "visibilityCondition": "model.authentication_method == 'token'"
         },
         {
             "name": "linkedin-oauth",
             "label": "Oauth2",
             "type": "PRESET",
             "parameterSetId": "3-legged-oauth",
-            "visibilityCondition" : "model.authentication_method == 'oauth'"
+            "visibilityCondition": "model.authentication_method == 'oauth'"
         }
-        
     ],
-
     "resourceKeys": []
-
 }

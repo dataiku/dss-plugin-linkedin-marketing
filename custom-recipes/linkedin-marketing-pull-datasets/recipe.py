@@ -2,6 +2,7 @@
 from api_format import LinkedInAPIFormatter
 from api_call import get_query, check_input_values, filter_query
 import logging
+from datetime import datetime
 
 import dataiku
 from dataiku.customrecipe import (
@@ -33,6 +34,10 @@ elif authentication_method == "oauth":
         raise Exception("Authentication error")
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
+if config.get("date_manager") == "timerange":
+    start_date = datetime.strptime(config.get("start"), '%Y-%m-%dT%H:%M:%S.%fZ')
+    end_date = datetime.strptime(config.get("end"), '%Y-%m-%dT%H:%M:%S.%fZ')
+
 check_input_values(account_id, HEADERS)
 
 # ===============================================================================
@@ -50,8 +55,7 @@ if get_output_names_for_role("campaign_dataset") or get_output_names_for_role("c
     campaigns_df = api_formatter.format_to_df()
 
 if get_output_names_for_role("campaign_analytics_dataset"):
-    campaign_analytics = filter_query(
-        HEADERS, granularity="CAMPAIGN_ANALYTICS", mother=campaigns_df)
+    campaign_analytics = filter_query(HEADERS, granularity="CAMPAIGN_ANALYTICS", mother=campaigns_df, start_date=start_date, end_date=end_date)
     api_formatter = LinkedInAPIFormatter(campaign_analytics)
     campaign_analytics_df = api_formatter.format_to_df()
 
@@ -61,7 +65,8 @@ if get_output_names_for_role("creative_dataset") or get_output_names_for_role("c
     creatives_df = api_formatter.format_to_df()
 
 if get_output_names_for_role("creatives_analytics_dataset"):
-    creative_analytics = filter_query(HEADERS, granularity="CREATIVES_ANALYTICS", mother=creatives_df, batch_size=batch_size)
+    creative_analytics = filter_query(HEADERS, granularity="CREATIVES_ANALYTICS", mother=creatives_df,
+                                      batch_size=batch_size, start_date=start_date, end_date=end_date)
     api_formatter = LinkedInAPIFormatter(creative_analytics)
     creative_analytics_df = api_formatter.format_to_df()
 

@@ -3,10 +3,11 @@ import numpy as np
 import pandas as pd
 from math import ceil
 import logging
+from datetime import datetime
 from api_format import LinkedInAPIFormatter
 
 
-def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000) -> dict():
+def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict():
     """
     Handle search queries filtered by ids. The list of ids is derived from a mother database.
 
@@ -23,31 +24,17 @@ def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_si
 
     try:
         ids = mother.id.values
-        response = get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size)
+        response = get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
     except AttributeError as e:
         logging.info(e)
+        print("****************")
+        print(get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date))
         response = {"API_response": "No relevant output - perhaps, decrease the batch size"}
     return response
 
 
-def query(url: str, headers: dict, parameters: dict) -> dict():
-    """
-    Retrieve a json with data pulled from the API
-
-    Inputs:
-        url                 Url used in the GET query
-        headers             Headers of the GET query, containing the access token for the OAuth2 identification
-        parameters          Parameters needed for the get query
-
-    Outputs:
-        formatted_response  Output of the API call with the appropriate content, for ex- dateRange, impressions...
-    """
-    response = requests.get(url=url, headers=headers, params=parameters)
-    return response.json()
-
-
-def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() = [], batch_size: int = 100):
-    url, initial_params = set_up_query(granularity, ids, account_id)
+def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() = [], batch_size: int = 100, start_date: datetime = None, end_date: datetime = None):
+    url, initial_params = set_up_query(granularity, ids, account_id, start_date, end_date)
     if granularity == "ACCOUNT" or granularity == "GROUP" or granularity == "CAMPAIGN" or granularity == "CREATIVES":
         params = {**initial_params, **get_analytics_parameters(ids, granularity)}
         response = query_with_pagination(url, headers, params)
@@ -76,6 +63,22 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, max_pages: 
             parameters.update({"start": str(start)})
             response["elements"].extend(query(url, headers, parameters)["elements"])
     return response
+
+
+def query(url: str, headers: dict, parameters: dict) -> dict():
+    """
+    Retrieve a json with data pulled from the API
+
+    Inputs:
+        url                 Url used in the GET query
+        headers             Headers of the GET query, containing the access token for the OAuth2 identification
+        parameters          Parameters needed for the get query
+
+    Outputs:
+        formatted_response  Output of the API call with the appropriate content, for ex- dateRange, impressions...
+    """
+    response = requests.get(url=url, headers=headers, params=parameters)
+    return response.json()
 
 
 def query_per_batch(url, headers, initial_params, granularity, ids, batch_size):
@@ -157,7 +160,7 @@ def check_input_values(account_id: int, headers: dict):
                 "Wrong account id or you don't have the permission to access this account")
 
 
-def set_up_query(granularity, ids, account_id=0):
+def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date: datetime = None, end_date: datetime = None):
     url = {
         "ACCOUNT": "https://api.linkedin.com/v2/adAccountsV2",
         "GROUP": "https://api.linkedin.com/v2/adCampaignGroupsV2",
@@ -205,6 +208,27 @@ def set_up_query(granularity, ids, account_id=0):
         raise ValueError(
             "Granularity value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
 
+    if granularity == "CAMPAIGN_ANALYTICS" or granularity == "CREATIVES_ANALYTICS":
+        initial_param = date_filter(granularity, initial_param, start_date, end_date)
+
     url = url[granularity]
     params = initial_param[granularity]
     return url, params
+
+
+def date_filter(granularity: str, initial_param: dict(), start_date: datetime, end_date: datetime):
+    if start_date and end_date:
+        if start_date.year < 2006 or start_date > datetime.now():
+            raise ValueError("Please select a valid start date")
+        if start_date > end_date:
+            raise ValueError("Please select a valid time range")
+
+    if start_date:
+        initial_param[granularity]["dateRange.start.day"] = start_date.day
+        initial_param[granularity]["dateRange.start.month"] = start_date.month
+        initial_param[granularity]["dateRange.start.year"] = start_date.year
+    if end_date:
+        initial_param[granularity]["dateRange.end.day"] = end_date.day
+        initial_param[granularity]["dateRange.end.month"] = end_date.month
+        initial_param[granularity]["dateRange.end.year"] = end_date.year
+        return initial_param
