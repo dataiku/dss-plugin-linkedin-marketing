@@ -34,9 +34,14 @@ elif authentication_method == "oauth":
         raise Exception("Authentication error")
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
-if config.get("date_manager") == "timerange":
-    start_date = datetime.strptime(config.get("start"), '%Y-%m-%dT%H:%M:%S.%fZ')
-    end_date = datetime.strptime(config.get("end"), '%Y-%m-%dT%H:%M:%S.%fZ')
+
+if config.get("date_manager"):
+    start_date = config.get("start")
+    end_date = config.get("end")
+    if start_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    if end_date:
+        end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
 check_input_values(account_id, HEADERS)
 

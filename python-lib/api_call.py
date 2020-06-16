@@ -27,8 +27,6 @@ def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_si
         response = get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
     except AttributeError as e:
         logging.info(e)
-        print("****************")
-        print(get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date))
         response = {"API_response": "No relevant output - perhaps, decrease the batch size"}
     return response
 
@@ -212,6 +210,7 @@ def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date:
         initial_param = date_filter(granularity, initial_param, start_date, end_date)
 
     url = url[granularity]
+    print("******", initial_param)
     params = initial_param[granularity]
     return url, params
 
@@ -231,4 +230,4 @@ def date_filter(granularity: str, initial_param: dict(), start_date: datetime, e
         initial_param[granularity]["dateRange.end.day"] = end_date.day
         initial_param[granularity]["dateRange.end.month"] = end_date.month
         initial_param[granularity]["dateRange.end.year"] = end_date.year
-        return initial_param
+    return initial_param
