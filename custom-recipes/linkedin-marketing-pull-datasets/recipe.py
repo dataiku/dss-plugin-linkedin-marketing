@@ -28,9 +28,9 @@ elif authentication_method == "oauth":
         access_token = config.get('linkedin-oauth')['linkedin-oauth']
         HEADERS = {'Authorization': 'Bearer ' + access_token}
     except Exception as err:
-        logger.error(
+        logging.error(
             "ERROR [-] Error while reading your LinkedIn access token from Project Variables")
-        logger.error(str(err))
+        logging.error(str(err))
         raise Exception("Authentication error")
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")

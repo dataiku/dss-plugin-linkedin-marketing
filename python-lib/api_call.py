@@ -210,7 +210,6 @@ def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date:
         initial_param = date_filter(granularity, initial_param, start_date, end_date)
 
     url = url[granularity]
-    print("******", initial_param)
     params = initial_param[granularity]
     return url, params
 
