@@ -41,7 +41,7 @@ def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() 
     return response
 
 
-def query_with_pagination(url: str, headers: dict, parameters: dict, max_pages: int = 100) -> dict():
+def query_with_pagination(url: str, headers: dict, parameters: dict, max_entities: int = 100) -> dict():
     """
     Handle queries with pagination. Pagination is only supported for campaign groups, campaigns and creatives
 
@@ -49,15 +49,16 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, max_pages: 
         url              Url used in the GET query
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         parameters       Parameters needed for the get query
+        max_entities     Max entities per query
 
     Outputs:
         response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
     """
-    parameters.update({"count": str(max_pages)})
+    parameters.update({"count": str(max_entities)})
     response = query(url, headers, parameters)
-    total_pages = response["paging"]["total"]
-    if total_pages and total_pages > max_pages:
-        for start in range(max_pages, total_pages, max_pages):
+    total_entities = response["paging"]["total"]
+    if total_entities and total_entities > max_entities:
+        for start in range(max_entities, total_entities, max_entities):
             parameters.update({"start": str(start)})
             response["elements"].extend(query(url, headers, parameters)["elements"])
     return response
