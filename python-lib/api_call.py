@@ -10,9 +10,10 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format='LinkedIn Marketing plugin %(levelname)s - %(message)s')
 
 
-def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict():
+def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict:
     """
     Handle search queries filtered by ids. The list of ids is derived from a mother database.
+    Attribute error is raised when the mother dataframe is empty.
 
         Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
@@ -20,6 +21,8 @@ def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_si
         account_id       ID of the sponsored ad account
         mother           Dataframe which contains the ids used to filter the query.  Ex - mother : campaign groups -> child: campaigns
         batch_size       Number of ids by batch query (ex - 100)
+        start_date       First day of the chosen time range (None for all time)
+        end_date         Last day of the time range (None for today)
 
     Outputs:
         response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
@@ -30,12 +33,31 @@ def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_si
         response = get_query(headers, granularity=granularity, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
     except AttributeError as e:
         logger.info(e)
-        response = {"API_response": "No relevant output - perhaps, decrease the batch size"}
+        logger.info("The mother dataframe is empty")
+        response = {
+            "API_response": "No relevant output - Please check the parent dataframe (campaign for campaign analytics, creatives for creative analytics)"}
     return response
 
 
-def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() = [], batch_size: int = 100, start_date: datetime = None, end_date: datetime = None):
-    url, initial_params = set_up_query(granularity, ids, account_id, start_date, end_date)
+def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() = [], batch_size: int = 100, start_date: datetime = None, end_date: datetime = None) -> dict:
+    """
+    Perfom a GET query to the LinkedIn API. For the tables ACCOUNT, GROUP, CAMPAIGN and CREATIVES, the API handles pagination.
+    However for the ad analytics endpoint, pagination is not supported so batch queries are performed
+
+    Inputs:
+        headers          Headers of the GET query, containing the access token for the OAuth2 identification
+        granularity      Granularity of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        account_id       ID of the sponsored ad account
+        ids              Ids of the queried entities  (campaign ids, group ids...)
+        batch_size       Number of ids by batch query (ex - 100)
+        start_date       First day of the chosen time range (None for all time)
+        end_date         Last day of the time range (None for today)
+
+    Outputs:
+        response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
+
+    """
+    url, initial_params = set_up_query(granularity, account_id, start_date, end_date)
     if granularity == "ACCOUNT" or granularity == "GROUP" or granularity == "CAMPAIGN" or granularity == "CREATIVES":
         params = {**initial_params, **get_analytics_parameters(ids, granularity)}
         response = query_with_pagination(url, headers, params)
@@ -44,7 +66,7 @@ def get_query(headers: dict, granularity: str, account_id: int = 0, ids: list() 
     return response
 
 
-def query_with_pagination(url: str, headers: dict, parameters: dict, max_entities: int = 100) -> dict():
+def query_with_pagination(url: str, headers: dict, parameters: dict, max_entities: int = 100) -> dict:
     """
     Handle queries with pagination. Pagination is only supported for campaign groups, campaigns and creatives
 
@@ -52,7 +74,7 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, max_entitie
         url              Url used in the GET query
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         parameters       Parameters needed for the get query
-        max_entities     Max entities per query
+        max_entities     Max entities per query (set to 100 in the case of the LinkedIn API)
 
     Outputs:
         response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
@@ -67,7 +89,7 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, max_entitie
     return response
 
 
-def query(url: str, headers: dict, parameters: dict) -> dict():
+def query(url: str, headers: dict, parameters: dict) -> dict:
     """
     Retrieve a json with data pulled from the API
 
@@ -77,13 +99,25 @@ def query(url: str, headers: dict, parameters: dict) -> dict():
         parameters          Parameters needed for the get query
 
     Outputs:
-        formatted_response  Output of the API call with the appropriate content, for ex- dateRange, impressions...
+        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
     """
     response = requests.get(url=url, headers=headers, params=parameters)
     return response.json()
 
 
-def query_per_batch(url, headers, initial_params, granularity, ids, batch_size):
+def query_per_batch(url: str, headers: dict, initial_params: dict, granularity: str, ids: list, batch_size):
+    """
+    Performs a batch query when needed
+
+    Inputs:
+        url                 Url used in the GET query
+        headers             Headers of the GET query, containing the access token for the OAuth2 identification
+        parameters          Parameters needed for the get query
+
+    Outputs:
+        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
+
+    """
     count = len(ids)
     if count >= batch_size:
         response = handle_batch_query(batch_size, ids, granularity, url, headers, initial_params)
@@ -93,7 +127,7 @@ def query_per_batch(url, headers, initial_params, granularity, ids, batch_size):
     return response
 
 
-def handle_batch_query(batch_size: int, ids: list(), granularity: str, url: str, headers: dict, initial_params: dict) -> dict():
+def handle_batch_query(batch_size: int, ids: list, granularity: str, url: str, headers: dict, initial_params: dict) -> dict:
     """
     Perfom a batch get query
 
@@ -123,7 +157,7 @@ def handle_batch_query(batch_size: int, ids: list(), granularity: str, url: str,
     return response
 
 
-def get_analytics_parameters(ids: list(), granularity: str) -> dict:
+def get_analytics_parameters(ids: list, granularity: str) -> dict:
     """
     Given a list of campaign ids or creative ids, returns a dictionary with a parameters' dictionary in a proper format
 
@@ -147,9 +181,11 @@ def get_analytics_parameters(ids: list(), granularity: str) -> dict:
 
 def check_input_values(account_id: int, headers: dict):
     """
-    Check if the account and the access tokens are valid
-    headers          Headers of the GET query, containing the access token for the OAuth2 identification
-    account_id       ID of the sponsored ad account
+    Check if the account id and the access tokens are valid
+
+    Inputs:
+        headers          Headers of the GET query, containing the access token for the OAuth2 identification
+        account_id       ID of the sponsored ad account
     """
     account = get_query(headers, granularity="ACCOUNT")
     if "serviceErrorCode" in account.keys():
@@ -158,11 +194,23 @@ def check_input_values(account_id: int, headers: dict):
         api_formatter = LinkedInAPIFormatter(account)
         account_df = api_formatter.format_to_df()
         if account_id not in account_df.id.values:
-            raise ValueError(
-                "Wrong account id or you don't have the permission to access this account")
+            raise ValueError("Wrong account id or you don't have the permission to access this account")
 
 
-def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date: datetime = None, end_date: datetime = None):
+def set_up_query(granularity: str, account_id: int = 0, start_date: datetime = None, end_date: datetime = None) -> (str, dict):
+    """
+    Retrieve the proper url and initial parameters for a given granularity
+
+    Inputs
+        granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        account_id       ID of the sponsored ad account
+        start_date       First day of the chosen time range (None for all time)
+        end_date         Last day of the time range (None for today)
+
+    Outputs
+        url              Url used in the GET query
+        params           Initial parameters of the GET query
+    """
     url = {
         "ACCOUNT": "https://api.linkedin.com/v2/adAccountsV2",
         "GROUP": "https://api.linkedin.com/v2/adCampaignGroupsV2",
@@ -218,7 +266,19 @@ def set_up_query(granularity: str, ids: list(), account_id: int = 0, start_date:
     return url, params
 
 
-def date_filter(granularity: str, initial_param: dict(), start_date: datetime, end_date: datetime):
+def date_filter(granularity: str, initial_param: dict(), start_date: datetime, end_date: datetime) -> dict:
+    """
+    Update the query paramaters with the chosen timerange
+
+    Inputs
+        granularity      Granularity of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+        initial_params   Default parameters for the query. For ex -  q: search
+        start_date       First day of the chosen time range (None for all time)
+        end_date         Last day of the time range (None for today)
+
+    Outputs
+        initial_params   Default paramaters with date components
+    """
     if start_date and end_date:
         if start_date.year < 2006 or start_date > datetime.now():
             raise ValueError("Please select a valid start date")
