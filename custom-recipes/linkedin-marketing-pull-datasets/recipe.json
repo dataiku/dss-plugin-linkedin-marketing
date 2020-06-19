@@ -80,16 +80,18 @@
             "visibilityCondition": true
         },
         {
-            "type": "DATE",
+            "type": "STRING",
             "name": "start",
-            "label": "Start date",
+            "label": "Start date (UTC midnight)",
+            "description": "Format dd/MM/YYYY",
             "parameterSetId": "start-date",
             "visibilityCondition": "model.date_manager == 'timerange'"
         },
         {
-            "type": "DATE",
+            "type": "STRING",
             "name": "end",
-            "label": "End date",
+            "label": "End date (UTC midnight)",
+            "description": "Format dd/MM/YYYY",
             "parameterSetId": "end-date",
             "visibilityCondition": "model.date_manager == 'timerange'"
         },
