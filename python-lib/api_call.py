@@ -4,10 +4,10 @@ import pandas as pd
 from math import ceil
 import logging
 from datetime import datetime
-from api_format import LinkedInAPIFormatter
+from api_format import format_to_df
 
 logger = logging.getLogger()
-logging.basicConfig(level=logging.INFO, format='LinkedIn Marketing plugin %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
 def filter_query(headers: dict, granularity: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict:
@@ -105,19 +105,7 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
     return response.json()
 
 
-def query_per_batch(url: str, headers: dict, initial_params: dict, granularity: str, ids: list, batch_size):
-    """
-    Performs a batch query when needed
-
-    Inputs:
-        url                 Url used in the GET query
-        headers             Headers of the GET query, containing the access token for the OAuth2 identification
-        parameters          Parameters needed for the get query
-
-    Outputs:
-        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
-
-    """
+def query_per_batch(url: str, headers: dict, initial_params: dict, granularity: str, ids: list, batch_size: int) -> dict:
     count = len(ids)
     if count >= batch_size:
         response = handle_batch_query(batch_size, ids, granularity, url, headers, initial_params)
@@ -159,7 +147,7 @@ def handle_batch_query(batch_size: int, ids: list, granularity: str, url: str, h
 
 def get_analytics_parameters(ids: list, granularity: str) -> dict:
     """
-    Given a list of campaign ids or creative ids, returns a dictionary with a parameters' dictionary in a proper format
+    Given a list of campaign ids or creative ids, returns a dictionary with a parameters" dictionary in a proper format
 
     Inputs:
         ids              List of campaign ids or creative ids that you want to add in the get query to retrieve their key metrics
@@ -191,8 +179,7 @@ def check_input_values(account_id: int, headers: dict):
     if "serviceErrorCode" in account.keys():
         raise ValueError(str(account))
     else:
-        api_formatter = LinkedInAPIFormatter(account)
-        account_df = api_formatter.format_to_df()
+        account_df = format_to_df(account)
         if account_id not in account_df.id.values:
             raise ValueError("Wrong account id or you don't have the permission to access this account")
 
