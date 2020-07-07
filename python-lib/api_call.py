@@ -11,63 +11,32 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
-def filter_query(headers: dict, category: str, parent: pd.DataFrame, batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
-    """
-    Handle search queries filtered by ids. The list of ids is derived from a parent database.
-    Attribute error is raised when the parent dataframe is empty.
-
-        Inputs:
-        headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        category         category of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        account_id       ID of the sponsored ad account
-        parent           Dataframe which contains the ids used to filter the query.  Ex - parent : campaign groups -> child: campaigns
-        batch_size       Number of ids by batch query (ex - 100)
-        start_date       First day of the chosen time range (None for all time)
-        end_date         Last day of the time range (None for today)
-
-    Outputs:
-        response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
-    """
-
-    try:
-        ids = parent.id.values
-        response = get_query(headers, category=category, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
-    except AttributeError as e:
-        logger.info(e)
-        logger.info("The parent dataframe is empty")
-        response = {
-            "API_response": "No relevant output - Please check the parent dataframe (campaign for campaign analytics, creatives for creative analytics)"}
+def query_ads(headers: dict, category: str, account_id: int = 0, parent: pd.DataFrame = pd.DataFrame()):
+    url, params = set_up_query(category, account_id)
+    if not parent.empty:
+        ids = parent["id"].values
+        params = {**params, **get_analytics_parameters(ids, category)}
+    response = query_with_pagination(url, headers, params)
     return response
 
 
-def get_query(headers: dict, category: str, account_id: int = 0, ids: list() = [], batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
-    """
-    Perfom a GET query to the LinkedIn API. For the tables ACCOUNT, GROUP, CAMPAIGN and CREATIVES, the API handles pagination.
-    However for the ad analytics endpoint, pagination is not supported so batch queries are performed
-
-    Inputs:
-        headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        category         category of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        account_id       ID of the sponsored ad account
-        ids              Ids of the queried entities  (campaign ids, group ids...)
-        batch_size       Number of ids by batch query (ex - 100)
-        start_date       First day of the chosen time range (None for all time)
-        end_date         Last day of the time range (None for today)
-
-    Outputs:
-        response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
-
-    """
-    url, initial_params = set_up_query(category, account_id, start_date, end_date)
-    if category == "ACCOUNT" or category == "GROUP" or category == "CAMPAIGN" or category == "CREATIVES":
-        params = {**initial_params, **get_analytics_parameters(ids, category)}
-        response = query_with_pagination(url, headers, params)
-    elif category == "CAMPAIGN_ANALYTICS" or category == "CREATIVES_ANALYTICS":
-        response = query_per_batch(url, headers, initial_params, category, ids, batch_size)
+def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
+    if not parent.empty:
+        url, initial_params = set_up_query(category)
+        initial_params = date_filter(initial_params, start_date, end_date)
+        ids = parent["id"].values
+        count = len(ids)
+        if count >= batch_size:
+            response = query_by_batch(batch_size, ids, category, url, headers, initial_params)
+        else:
+            params = {**initial_params, **get_analytics_parameters(ids, category)}
+            response = query(url, headers, params)
+    else:
+        raise ValueError("The parent dataframe is empty")
     return response
 
 
-def query_with_pagination(url: str, headers: dict, parameters: dict, max_entities: int = 100) -> dict:
+def query_with_pagination(url: str, headers: dict, parameters: dict, page_size: int = 100) -> dict:
     """
     Handle queries with pagination. Pagination is only supported for campaign groups, campaigns and creatives
 
@@ -75,48 +44,22 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, max_entitie
         url              Url used in the GET query
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         parameters       Parameters needed for the get query
-        max_entities     Max entities per query (set to 100 in the case of the LinkedIn API)
+        page_size        Max entities per query (set to 100 in the case of the LinkedIn API)
 
     Outputs:
         response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
     """
-    parameters.update({"count": str(max_entities)})
+    parameters.update({"count": str(page_size)})
     response = query(url, headers, parameters)
     total_entities = response["paging"]["total"]
-    if total_entities and total_entities > max_entities:
-        for start in range(max_entities, total_entities, max_entities):
+    if total_entities and total_entities > page_size:
+        for start in range(page_size, total_entities, page_size):
             parameters.update({"start": str(start)})
             response["elements"].extend(query(url, headers, parameters)["elements"])
     return response
 
 
-def query(url: str, headers: dict, parameters: dict) -> dict:
-    """
-    Retrieve a json with data pulled from the API
-
-    Inputs:
-        url                 Url used in the GET query
-        headers             Headers of the GET query, containing the access token for the OAuth2 identification
-        parameters          Parameters needed for the get query
-
-    Outputs:
-        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
-    """
-    response = requests.get(url=url, headers=headers, params=parameters)
-    return response.json()
-
-
-def query_per_batch(url: str, headers: dict, initial_params: dict, category: str, ids: list, batch_size: int) -> dict:
-    count = len(ids)
-    if count >= batch_size:
-        response = handle_batch_query(batch_size, ids, category, url, headers, initial_params)
-    else:
-        params = {**initial_params, **get_analytics_parameters(ids, category)}
-        response = query(url, headers, params)
-    return response
-
-
-def handle_batch_query(batch_size: int, ids: list, category: str, url: str, headers: dict, initial_params: dict) -> dict:
+def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers: dict, initial_params: dict) -> dict:
     """
     Perfom a batch get query
 
@@ -133,9 +76,9 @@ def handle_batch_query(batch_size: int, ids: list, category: str, url: str, head
     """
     count = len(ids)
     chunks = [*np.array_split(ids, ceil(count/batch_size))]
-    response = dict({"elements": [], "exception": []})
-    for batch in chunks:
-        params = {**initial_params, **get_analytics_parameters(batch, category)}
+    response = {"elements": []}
+    for chunk in chunks:
+        params = {**initial_params, **get_analytics_parameters(chunk, category)}
         query_output = query(url, headers, params)
         elements = query_output.get("elements", None)
         if elements:
@@ -168,15 +111,33 @@ def get_analytics_parameters(ids: list, category: str) -> dict:
     return params
 
 
-def check_input_values(account_id: int, headers: dict):
+def query(url: str, headers: dict, parameters: dict) -> dict:
+    """
+    Retrieve a json with data pulled from the API
+
+    Inputs:
+        url                 Url used in the GET query
+        headers             Headers of the GET query, containing the access token for the OAuth2 identification
+        parameters          Parameters needed for the get query
+
+    Outputs:
+        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
+    """
+    response = requests.get(url=url, headers=headers, params=parameters)
+    return response.json()
+
+
+def check_params(account_id: int, headers: dict, start_date: datetime, end_date: datetime):
     """
     Check if the account id and the access tokens are valid
 
     Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         account_id       ID of the sponsored ad account
+        start_date       First day of the chosen time range (None for all time)
+        end_date         Last day of the time range (None for today)
     """
-    account = get_query(headers, category="ACCOUNT")
+    account = query_ads(headers, category="ACCOUNT", account_id=account_id)
     if "serviceErrorCode" in account.keys():
         raise ValueError(str(account))
     else:
@@ -184,8 +145,18 @@ def check_input_values(account_id: int, headers: dict):
         if account_id not in account_df.id.values:
             raise ValueError("Wrong account id or you don't have the permission to access this account")
 
+    if start_date:
+        if start_date.year < 2006 or start_date > datetime.now():
+            raise ValueError("Please select a valid start date")
+        if end_date:
+            if start_date > end_date:
+                raise ValueError("Please select a valid time range")
+    if end_date:
+        if end_date.year < 2006:
+            raise ValueError("Please select a valid end date")
 
-def set_up_query(category: str, account_id: int = 0, start_date: datetime = None, end_date: datetime = None) -> (str, dict):
+
+def set_up_query(category: str, account_id: int = 0) -> (str, dict):
     """
     Retrieve the proper url and initial parameters for a given category
 
@@ -239,22 +210,15 @@ def set_up_query(category: str, account_id: int = 0, start_date: datetime = None
         }
     }
 
-    try:
-        initial_param[category]
-    except KeyError as e:
-        logger.error(e)
-        raise ValueError(
-            "category value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
-
-    if category == "CAMPAIGN_ANALYTICS" or category == "CREATIVES_ANALYTICS":
-        initial_param = date_filter(category, initial_param, start_date, end_date)
+    if category not in initial_param:
+        raise ValueError("category value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
 
     url = url[category]
     params = initial_param[category]
     return url, params
 
 
-def date_filter(category: str, initial_param: dict(), start_date: datetime, end_date: datetime) -> dict:
+def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict:
     """
     Update the query paramaters with the chosen timerange
 
@@ -267,18 +231,12 @@ def date_filter(category: str, initial_param: dict(), start_date: datetime, end_
     Outputs
         initial_params   Default paramaters with date components
     """
-    if start_date and end_date:
-        if start_date.year < 2006 or start_date > datetime.now():
-            raise ValueError("Please select a valid start date")
-        if start_date > end_date:
-            raise ValueError("Please select a valid time range")
-
     if start_date:
-        initial_param[category]["dateRange.start.day"] = start_date.day
-        initial_param[category]["dateRange.start.month"] = start_date.month
-        initial_param[category]["dateRange.start.year"] = start_date.year
+        param["dateRange.start.day"] = start_date.day
+        param["dateRange.start.month"] = start_date.month
+        param["dateRange.start.year"] = start_date.year
     if end_date:
-        initial_param[category]["dateRange.end.day"] = end_date.day
-        initial_param[category]["dateRange.end.month"] = end_date.month
-        initial_param[category]["dateRange.end.year"] = end_date.year
-    return initial_param
+        param["dateRange.end.day"] = end_date.day
+        param["dateRange.end.month"] = end_date.month
+        param["dateRange.end.year"] = end_date.year
+    return param
