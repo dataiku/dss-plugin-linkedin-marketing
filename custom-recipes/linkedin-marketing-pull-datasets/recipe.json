@@ -56,7 +56,7 @@
         {
             "name": "account_id",
             "label": "Account Id",
-            "description": "Id of the sponsored account. You may find in on the LinkedIn Campaign Manager tool : https://www.linkedin.com/campaignmanager/accounts. To retrieve all the tables, the account should contain at least one campaign and one creative",
+            "description": "Id of the sponsored account. You may find it in the LinkedIn Campaign Manager tool : https://www.linkedin.com/campaignmanager/accounts. To retrieve all the tables, the account should contain at least one campaign and one creative",
             "type": "INT",
             "mandatory": true
         },
