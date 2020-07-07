@@ -44,21 +44,21 @@ if config.get("date_manager"):
     if end_date:
         end_date = datetime.strptime(end_date, "%d/%m/%Y")
 
-check_params(account_id, HEADERS, start_date, end_date)
+check_params(HEADERS, account_id, start_date, end_date)
 
 # ===============================================================================
 # RUN
 # ===============================================================================
 
-group = query_ads(HEADERS, "GROUP", account_id=account_id)
+group = query_ads(HEADERS, "GROUP", account_id)
 campaign_groups_df = format_to_df(group)
 
 if get_output_names_for_role(Constants.CAMPAIGN_DATASET) or get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET) or get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    campaign = query_ads(HEADERS, "CAMPAIGN", parent=campaign_groups_df)
+    campaign = query_ads(HEADERS, "CAMPAIGN", account_id)
     campaigns_df = format_to_df(campaign)
 
 if get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    creative = query_ads(HEADERS, "CREATIVES", parent=campaigns_df)
+    creative = query_ads(HEADERS, "CREATIVES", account_id)
     creatives_df = format_to_df(creative)
 
 if get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):

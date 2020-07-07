@@ -11,16 +11,58 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
-def query_ads(headers: dict, category: str, account_id: int = 0, parent: pd.DataFrame = pd.DataFrame()):
+def check_params(headers: dict, account_id: int, start_date: datetime, end_date: datetime):
+    """Check if the account id and the access tokens are valid
+
+    :param dict headers:  Headers of the GET query, it contains the access token for the OAuth2 identification
+    :param int account_id:  ID of the sponsored ad account
+    :param datetime start_date:  First day of the chosen time range (None for all time)
+    :param datetime end_date:  Last day of the time range (None for today)
+    :raises: :class:`ValueError`: Invalid parameters
+    """
+    account = query_ads(headers, category="ACCOUNT", account_id=account_id)
+    if "serviceErrorCode" in account.keys():
+        raise ValueError(str(account))
+    else:
+        account_df = format_to_df(account)
+        if account_id not in account_df.id.values:
+            raise ValueError("Wrong account id or you don't have the permission to access this account")
+
+    if start_date:
+        if start_date.year < 2006 or start_date > datetime.now():
+            raise ValueError("Please select a valid start date")
+        if end_date:
+            if start_date > end_date:
+                raise ValueError("Please select a valid time range")
+    if end_date:
+        if end_date.year < 2006:
+            raise ValueError("Please select a valid end date")
+
+
+def query_ads(headers: dict, category: str, account_id: int) -> dict:
+    """Query the LinkedIn ad API. LinkedIn ad handles pagination
+
+    :param str category: granularity of the data that you want to get -> ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+
+    :returns: Response of the API
+    :rtype: dict
+    """
     url, params = set_up_query(category, account_id)
-    if not parent.empty:
-        ids = parent["id"].values
-        params = {**params, **get_analytics_parameters(ids, category)}
     response = query_with_pagination(url, headers, params)
     return response
 
 
 def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
+    """Query the ad analytics API. As it doesn't handle pagination, a batch query is performed.
+    The batch size indicates how many entities (campaigns or creatives) should be returned by batch query.
+
+    :param pd.DataFrame parent: Dataframe which contains the ids used to filter the query.  Ex - parent : campaign -> child: campaign_analytics
+    :param int batch_size: number of ids by batch query (ex - 100)
+    :raises: :class:`ValueError`: The parent dataframe is missing
+
+    :returns: Response of the API
+    :rtype: dict
+    """
     if not parent.empty:
         url, initial_params = set_up_query(category)
         initial_params = date_filter(initial_params, start_date, end_date)
@@ -37,17 +79,14 @@ def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch
 
 
 def query_with_pagination(url: str, headers: dict, parameters: dict, page_size: int = 100) -> dict:
-    """
-    Handle queries with pagination. Pagination is only supported for campaign groups, campaigns and creatives
+    """Handles queries with pagination. Pagination is only supported for campaign groups, campaigns and creatives
 
-    Inputs:
-        url              Url used in the GET query
-        headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        parameters       Parameters needed for the get query
-        page_size        Max entities per query (set to 100 in the case of the LinkedIn API)
+    :param str url: Url used for the GET query
+    :param dict parameters: Parameters used for the GET query
+    :param int page_size: Max entities per query (set to 100 in the case of the LinkedIn API)
 
-    Outputs:
-        response         Output of the API call with the appropriate content, for ex- dateRange, impressions...
+    :returns: Response of the API
+    :rtype: dict
     """
     parameters.update({"count": str(page_size)})
     response = query(url, headers, parameters)
@@ -76,39 +115,19 @@ def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers:
     """
     count = len(ids)
     chunks = [*np.array_split(ids, ceil(count/batch_size))]
-    response = {"elements": []}
+    response = {"elements": [], "exception": []}
     for chunk in chunks:
         params = {**initial_params, **get_analytics_parameters(chunk, category)}
         query_output = query(url, headers, params)
         elements = query_output.get("elements", None)
         if elements:
             response["elements"].extend(elements)
+        elif "elements" in query_output:
+            response["exception"].append({"Empty output": query_output})
         else:
             response = {**{"Hint": "consider decreasing the sample size"}, **query_output}
             break
     return response
-
-
-def get_analytics_parameters(ids: list, category: str) -> dict:
-    """
-    Given a list of campaign ids or creative ids, returns a dictionary with a parameters" dictionary in a proper format
-
-    Inputs:
-        ids              List of campaign ids or creative ids that you want to add in the get query to retrieve their key metrics
-        category         category of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-
-    Outputs:
-        params           Parameters used to query the AdAnalytics LinkedIn API
-    """
-
-    params = {}
-    key_prefix = {"GROUP": "", "CAMPAIGN": "search.campaignGroup.values[{}]", "CAMPAIGN_ANALYTICS": "campaigns[{}]",
-                  "CREATIVES": "search.campaign.values[{}]", "CREATIVES_ANALYTICS": "creatives[{}]"}
-    urn_prefix = {"GROUP": "", "CAMPAIGN": "urn:li:sponsoredCampaignGroup:", "CAMPAIGN_ANALYTICS": "urn:li:sponsoredCampaign:",
-                  "CREATIVES": "urn:li:sponsoredCampaign:", "CREATIVES_ANALYTICS": "urn:li:sponsoredCreative:"}
-    for i, id_value in enumerate(ids):
-        params[key_prefix[category].format(str(i))] = urn_prefix[category] + str(id_value)
-    return params
 
 
 def query(url: str, headers: dict, parameters: dict) -> dict:
@@ -125,35 +144,6 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
     """
     response = requests.get(url=url, headers=headers, params=parameters)
     return response.json()
-
-
-def check_params(account_id: int, headers: dict, start_date: datetime, end_date: datetime):
-    """
-    Check if the account id and the access tokens are valid
-
-    Inputs:
-        headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        account_id       ID of the sponsored ad account
-        start_date       First day of the chosen time range (None for all time)
-        end_date         Last day of the time range (None for today)
-    """
-    account = query_ads(headers, category="ACCOUNT", account_id=account_id)
-    if "serviceErrorCode" in account.keys():
-        raise ValueError(str(account))
-    else:
-        account_df = format_to_df(account)
-        if account_id not in account_df.id.values:
-            raise ValueError("Wrong account id or you don't have the permission to access this account")
-
-    if start_date:
-        if start_date.year < 2006 or start_date > datetime.now():
-            raise ValueError("Please select a valid start date")
-        if end_date:
-            if start_date > end_date:
-                raise ValueError("Please select a valid time range")
-    if end_date:
-        if end_date.year < 2006:
-            raise ValueError("Please select a valid end date")
 
 
 def set_up_query(category: str, account_id: int = 0) -> (str, dict):
@@ -187,10 +177,12 @@ def set_up_query(category: str, account_id: int = 0) -> (str, dict):
             "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
         },
         "CAMPAIGN": {
-            "q": "search"
+            "q": "search",
+            "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
         },
         "CREATIVES": {
-            "q": "search"
+            "q": "search",
+            "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
         },
         "CAMPAIGN_ANALYTICS": {
             "q": "analytics",
@@ -240,3 +232,25 @@ def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict
         param["dateRange.end.month"] = end_date.month
         param["dateRange.end.year"] = end_date.year
     return param
+
+
+def get_analytics_parameters(ids: list, category: str) -> dict:
+    """
+    Given a list of campaign ids or creative ids, returns a dictionary with a parameters" dictionary in a proper format
+
+    Inputs:
+        ids              List of campaign ids or creative ids that you want to add in the get query to retrieve their key metrics
+        category         category of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+
+    Outputs:
+        params           Parameters used to query the AdAnalytics LinkedIn API
+    """
+
+    params = {}
+    key_prefix = {"GROUP": "", "CAMPAIGN": "search.campaignGroup.values[{}]", "CAMPAIGN_ANALYTICS": "campaigns[{}]",
+                  "CREATIVES": "search.campaign.values[{}]", "CREATIVES_ANALYTICS": "creatives[{}]"}
+    urn_prefix = {"GROUP": "", "CAMPAIGN": "urn:li:sponsoredCampaignGroup:", "CAMPAIGN_ANALYTICS": "urn:li:sponsoredCampaign:",
+                  "CREATIVES": "urn:li:sponsoredCampaign:", "CREATIVES_ANALYTICS": "urn:li:sponsoredCreative:"}
+    for i, id_value in enumerate(ids):
+        params[key_prefix[category].format(str(i))] = urn_prefix[category] + str(id_value)
+    return params
