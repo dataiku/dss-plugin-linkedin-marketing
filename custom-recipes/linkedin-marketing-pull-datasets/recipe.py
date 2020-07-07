@@ -54,20 +54,20 @@ group = get_query(HEADERS, category="GROUP", account_id=account_id)
 campaign_groups_df = format_to_df(group)
 
 if get_output_names_for_role(Constants.CAMPAIGN_DATASET) or get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET) or get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    campaign = filter_query(HEADERS, category="CAMPAIGN", mother=campaign_groups_df)
+    campaign = filter_query(HEADERS, category="CAMPAIGN", parent=campaign_groups_df)
     campaigns_df = format_to_df(campaign)
 
 if get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
-    campaign_analytics = filter_query(HEADERS, category="CAMPAIGN_ANALYTICS", mother=campaigns_df,
+    campaign_analytics = filter_query(HEADERS, category="CAMPAIGN_ANALYTICS", parent=campaigns_df,
                                       batch_size=batch_size, start_date=start_date, end_date=end_date)
     campaign_analytics_df = format_to_df(campaign_analytics)
 
 if get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    creative = filter_query(HEADERS, category="CREATIVES", mother=campaigns_df, batch_size=batch_size)
+    creative = filter_query(HEADERS, category="CREATIVES", parent=campaigns_df, batch_size=batch_size)
     creatives_df = format_to_df(creative)
 
 if get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    creative_analytics = filter_query(HEADERS, category="CREATIVES_ANALYTICS", mother=creatives_df,
+    creative_analytics = filter_query(HEADERS, category="CREATIVES_ANALYTICS", parent=creatives_df,
                                       batch_size=batch_size, start_date=start_date, end_date=end_date)
     creative_analytics_df = format_to_df(creative_analytics)
 

@@ -5,21 +5,22 @@ from math import ceil
 import logging
 from datetime import datetime
 from api_format import format_to_df
+from constants import Constants
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
-def filter_query(headers: dict, category: str, mother: pd.DataFrame, batch_size: int = 1000, start_date: datetime = None, end_date: datetime = None) -> dict:
+def filter_query(headers: dict, category: str, parent: pd.DataFrame, batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
     """
-    Handle search queries filtered by ids. The list of ids is derived from a mother database.
-    Attribute error is raised when the mother dataframe is empty.
+    Handle search queries filtered by ids. The list of ids is derived from a parent database.
+    Attribute error is raised when the parent dataframe is empty.
 
         Inputs:
         headers          Headers of the GET query, containing the access token for the OAuth2 identification
         category         category of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
         account_id       ID of the sponsored ad account
-        mother           Dataframe which contains the ids used to filter the query.  Ex - mother : campaign groups -> child: campaigns
+        parent           Dataframe which contains the ids used to filter the query.  Ex - parent : campaign groups -> child: campaigns
         batch_size       Number of ids by batch query (ex - 100)
         start_date       First day of the chosen time range (None for all time)
         end_date         Last day of the time range (None for today)
@@ -29,17 +30,17 @@ def filter_query(headers: dict, category: str, mother: pd.DataFrame, batch_size:
     """
 
     try:
-        ids = mother.id.values
+        ids = parent.id.values
         response = get_query(headers, category=category, ids=ids, batch_size=batch_size, start_date=start_date, end_date=end_date)
     except AttributeError as e:
         logger.info(e)
-        logger.info("The mother dataframe is empty")
+        logger.info("The parent dataframe is empty")
         response = {
             "API_response": "No relevant output - Please check the parent dataframe (campaign for campaign analytics, creatives for creative analytics)"}
     return response
 
 
-def get_query(headers: dict, category: str, account_id: int = 0, ids: list() = [], batch_size: int = 100, start_date: datetime = None, end_date: datetime = None) -> dict:
+def get_query(headers: dict, category: str, account_id: int = 0, ids: list() = [], batch_size: int = Constants.DEFAULT_BATCH_SIZE, start_date: datetime = None, end_date: datetime = None) -> dict:
     """
     Perfom a GET query to the LinkedIn API. For the tables ACCOUNT, GROUP, CAMPAIGN and CREATIVES, the API handles pagination.
     However for the ad analytics endpoint, pagination is not supported so batch queries are performed
@@ -140,7 +141,7 @@ def handle_batch_query(batch_size: int, ids: list, category: str, url: str, head
         if elements:
             response["elements"].extend(elements)
         else:
-            response["exception"].append({"API_response": query_output})
+            response = {**{"Hint": "consider decreasing the sample size"}, **query_output}
             break
     return response
 
