@@ -13,3 +13,12 @@ class Constants(object):
     CREATIVE_DATASET = "creative_dataset"
     CREATIVE_ANALYTICS_DATASET = "creatives_analytics_dataset"
     DEFAULT_BATCH_SIZE = 80
+
+
+class Category(object):
+    ACCOUNT = "ACCOUNT"
+    GROUP = "GROUP"
+    CAMPAIGN = "CAMPAIGN"
+    CREATIVE = "CREATIVES"
+    CAMPAIGN_ANALYTICS = "CAMPAIGN_ANALYTICS"
+    CREATIVE_ANALYTICS = "CREATIVES_ANALYTICS"

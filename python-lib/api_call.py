@@ -5,7 +5,7 @@ from math import ceil
 import logging
 from datetime import datetime
 from api_format import format_to_df
-from constants import Constants
+from constants import Constants, Category
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
@@ -20,7 +20,7 @@ def check_params(headers: dict, account_id: int, start_date: datetime, end_date:
     :param datetime end_date:  Last day of the time range (None for today)
     :raises: :class:`ValueError`: Invalid parameters
     """
-    account = query_ads(headers, category="ACCOUNT", account_id=account_id)
+    account = query_ads(headers, Category.ACCOUNT, account_id)
     if "serviceErrorCode" in account.keys():
         raise ValueError(str(account))
     else:
@@ -99,19 +99,15 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, page_size: 
 
 
 def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers: dict, initial_params: dict) -> dict:
-    """
-    Perfom a batch get query
+    """Perfom a batch get query with multiple filters
+    A request should not return more than 1,000 entities (campaigns, creatives...).
+    When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.
 
-    Inputs:
-        batch_size       Number of ids by batch query (ex - 100)
-        ids              Ids of the queried entities  (campaign ids, group ids...)
-        headers          Headers of the GET query, containing the access token for the OAuth2 identification
-        url              Url used in the GET query
-        category         category of the data : ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        initial_params   Default parameters for the query. For ex -  q: search
+    :param list ids: list of entities used to filter the query
+    :param dict initial_params: default params for the query. Only the filter fields are missing.
 
-    Outputs:
-        response         Output of the API call with the appropriate contents, for ex- dateRange, impressions...
+    :returns : API's response
+    :rtype: dict
     """
     count = len(ids)
     chunks = [*np.array_split(ids, ceil(count/batch_size))]
@@ -123,7 +119,7 @@ def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers:
         if elements:
             response["elements"].extend(elements)
         elif "elements" in query_output:
-            response["exception"].append({"Empty output": query_output})
+            response["exception"].append({"Output without elements": query_output})
         else:
             response = {**{"Hint": "consider decreasing the sample size"}, **query_output}
             break
@@ -131,34 +127,20 @@ def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers:
 
 
 def query(url: str, headers: dict, parameters: dict) -> dict:
-    """
-    Retrieve a json with data pulled from the API
+    """Performs the get query. Response is returned in a json format
 
-    Inputs:
-        url                 Url used in the GET query
-        headers             Headers of the GET query, containing the access token for the OAuth2 identification
-        parameters          Parameters needed for the get query
-
-    Outputs:
-        response            Output of the API call with the appropriate content, for ex- dateRange, impressions...
+    :returns: API's response
+    :rtype: dict
     """
     response = requests.get(url=url, headers=headers, params=parameters)
     return response.json()
 
 
 def set_up_query(category: str, account_id: int = 0) -> (str, dict):
-    """
-    Retrieve the proper url and initial parameters for a given category
+    """Retrieve the proper url and initial parameters for a given category
 
-    Inputs
-        category         category of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        account_id       ID of the sponsored ad account
-        start_date       First day of the chosen time range (None for all time)
-        end_date         Last day of the time range (None for today)
-
-    Outputs
-        url              Url used in the GET query
-        params           Initial parameters of the GET query
+    :returns: URL and initial parameters for the GET query
+    :retype: tuple
     """
     url = {
         "ACCOUNT": "https://api.linkedin.com/v2/adAccountsV2",
@@ -211,17 +193,10 @@ def set_up_query(category: str, account_id: int = 0) -> (str, dict):
 
 
 def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict:
-    """
-    Update the query paramaters with the chosen timerange
+    """Update the query parameters with the chosen timerange
 
-    Inputs
-        category         category of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-        initial_params   Default parameters for the query. For ex -  q: search
-        start_date       First day of the chosen time range (None for all time)
-        end_date         Last day of the time range (None for today)
-
-    Outputs
-        initial_params   Default paramaters with date components
+    :returns: Default parameters for the GET query with date components
+    :retype: dict
     """
     if start_date:
         param["dateRange.start.day"] = start_date.day
@@ -235,15 +210,10 @@ def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict
 
 
 def get_analytics_parameters(ids: list, category: str) -> dict:
-    """
-    Given a list of campaign ids or creative ids, returns a dictionary with a parameters" dictionary in a proper format
+    """Given a list of campaign ids or creative ids, returns parameters with corresponding filters.
 
-    Inputs:
-        ids              List of campaign ids or creative ids that you want to add in the get query to retrieve their key metrics
-        category         category of the data : GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
-
-    Outputs:
-        params           Parameters used to query the AdAnalytics LinkedIn API
+    :returns: params: Parameters used to filter the query to the AdAnalytics LinkedIn API
+    :retype: dict
     """
 
     params = {}
