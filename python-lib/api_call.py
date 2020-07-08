@@ -63,7 +63,9 @@ def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch
     :returns: Response of the API
     :rtype: dict
     """
-    if not parent.empty:
+    if "exception" in parent:
+        response = {"exception": "The parent dataframe is invalid, so this dataset cannot be retrieved"}
+    else:
         url, initial_params = set_up_query(category)
         initial_params = date_filter(initial_params, start_date, end_date)
         ids = parent["id"].values
@@ -73,8 +75,6 @@ def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch
         else:
             params = {**initial_params, **get_analytics_parameters(ids, category)}
             response = query(url, headers, params)
-    else:
-        raise ValueError("The parent dataframe is empty")
     return response
 
 
