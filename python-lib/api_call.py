@@ -196,7 +196,7 @@ def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict
     """Update the query parameters with the chosen timerange
 
     :returns: Default parameters for the GET query with date components
-    :retype: dict
+    :rtype: dict
     """
     if start_date:
         param["dateRange.start.day"] = start_date.day
