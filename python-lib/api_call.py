@@ -213,7 +213,7 @@ def get_analytics_parameters(ids: list, category: str) -> dict:
     """Given a list of campaign ids or creative ids, returns parameters with corresponding filters.
 
     :returns: params: Parameters used to filter the query to the AdAnalytics LinkedIn API
-    :retype: dict
+    :rtype: dict
     """
 
     params = {}
