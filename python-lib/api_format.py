@@ -3,6 +3,13 @@ import logging
 
 
 def format_to_df(request_query) -> pd.DataFrame:
+    """Format the elements returned from the query
+
+    :param dict request_query:  response from the LinkedIn API
+
+    :returns: a formatted dataframe
+    :rtype: pd.Dataframe
+    """
     api_column_names = build_column_names(request_query)
     logger = logging.getLogger()
     logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
@@ -17,8 +24,13 @@ def format_to_df(request_query) -> pd.DataFrame:
     return df
 
 
-def build_column_names(query: dict) -> list():
-    content_columns = query.get("elements", None)
+def build_column_names(request_query: dict) -> list():
+    """Retrieve the column names from the API's response
+
+    :returns: column names
+    :rtype: list
+    """
+    content_columns = request_query.get("elements", None)
     if content_columns:
         column_names = list(content_columns[0].keys())
     else:
