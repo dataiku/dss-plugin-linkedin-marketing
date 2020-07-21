@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from api_format import format_to_df
 from api_call import check_params, query_ads, query_ad_analytics
-from constants import authentication_type, Constants, Category
+from constants import AuthenticationType, Constants, Category
 import logging
 from datetime import datetime
 
@@ -16,19 +16,19 @@ from dataiku.customrecipe import (
 # ==============================================================================
 config = get_recipe_config()
 
-authentication_method = authentication_type(config.get("authentication_method"))
+authentication_method = AuthenticationType(config.get("authentication_method"))
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
-if authentication_method == authentication_type.TOKEN:
+if authentication_method == AuthenticationType.TOKEN:
     if config.get("linkedin_access_token"):
         HEADERS = {"authorization": "Bearer " + config.get("linkedin_access_token")["access_token"]}
     else:
         raise ValueError("Please specify an access token preset")
 
-elif authentication_method == authentication_type.OAUTH:
-    if config.get("linkedi_oauth"):
-        access_token = config.get("linkedi_oauth")["linkedin_oauth"]
+elif authentication_method == AuthenticationType.OAUTH:
+    if config.get("linkedin_oauth"):
+        access_token = config.get("linkedin_oauth")["linkedin_oauth"]
         HEADERS = {"Authorization": "Bearer " + access_token}
     else:
         raise ValueError("Please specify an Oauth preset")

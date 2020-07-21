@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+from typing import List
 
 
 def format_to_df(request_query) -> pd.DataFrame:
@@ -24,7 +25,7 @@ def format_to_df(request_query) -> pd.DataFrame:
     return df
 
 
-def build_column_names(request_query: dict) -> list():
+def build_column_names(request_query: dict) -> List[str]:
     """Retrieve the column names from the API's response
 
     :returns: column names

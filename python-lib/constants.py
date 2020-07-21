@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class authentication_type(Enum):
+class AuthenticationType(Enum):
     TOKEN = "token"
     OAUTH = "oauth"
 
