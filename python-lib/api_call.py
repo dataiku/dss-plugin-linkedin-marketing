@@ -65,7 +65,7 @@ def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch
     :rtype: dict
     """
     if "exception" in parent:
-        response = {"exception": "The parent dataframe is invalid, so this dataset cannot be retrieved"}
+        response = {"exception": "The parent dataframe is empty or invalid, so this dataset cannot be retrieved"}
     else:
         url, initial_params = set_up_query(category)
         initial_params = date_filter(initial_params, start_date, end_date)
@@ -97,7 +97,7 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, page_size: 
         if total_entities and total_entities > page_size:
             for start in range(page_size, total_entities, page_size):
                 parameters.update({"start": str(start)})
-                response["elements"].extend(response["elements"])
+                response["elements"].extend(query(url, headers, parameters)["elements"])
     else:
         response["exception"] = response
     return response
