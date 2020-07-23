@@ -21,8 +21,9 @@ def check_params(headers: dict, account_id: int, start_date: datetime, end_date:
     :raises: :class:`ValueError`: Invalid parameters
     """
     account = query_ads(headers, Category.ACCOUNT, account_id)
-    if "serviceErrorCode" in account.keys():
-        raise ValueError(str(account))
+    exception = account.get("exception", None)
+    if exception:
+        raise ValueError(str(exception))
     else:
         account_df = format_to_df(account)
         if account_id not in account_df.id.values:
@@ -90,11 +91,15 @@ def query_with_pagination(url: str, headers: dict, parameters: dict, page_size: 
     """
     parameters.update({"count": str(page_size)})
     response = query(url, headers, parameters)
-    total_entities = response["paging"]["total"]
-    if total_entities and total_entities > page_size:
-        for start in range(page_size, total_entities, page_size):
-            parameters.update({"start": str(start)})
-            response["elements"].extend(query(url, headers, parameters)["elements"])
+    paging = response.get("paging", None)
+    if paging:
+        total_entities = paging.get("total", None)
+        if total_entities and total_entities > page_size:
+            for start in range(page_size, total_entities, page_size):
+                parameters.update({"start": str(start)})
+                response["elements"].extend(response["elements"])
+    else:
+        response["exception"] = response
     return response
 
 
