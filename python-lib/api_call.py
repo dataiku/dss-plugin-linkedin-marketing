@@ -11,11 +11,12 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
-def check_params(headers: dict, account_id: int, start_date: datetime, end_date: datetime):
+def check_params(headers: dict, account_id: int, batchsize: int, start_date: datetime, end_date: datetime):
     """Check if the account id and the access tokens are valid
 
     :param dict headers:  Headers of the GET query, it contains the access token for the OAuth2 identification
     :param int account_id:  ID of the sponsored ad account
+    :param int batch_size: number of ids by batch query (ex - 100)
     :param datetime start_date:  First day of the chosen time range (None for all time)
     :param datetime end_date:  Last day of the time range (None for today)
     :raises: :class:`ValueError`: Invalid parameters
@@ -25,9 +26,15 @@ def check_params(headers: dict, account_id: int, start_date: datetime, end_date:
     if exception:
         raise ValueError(str(exception))
     else:
-        account_df = format_to_df(account)
+        account_df = format_to_df(account, Category.ACCOUNT)
         if account_id not in account_df.id.values:
             raise ValueError("Wrong account id or you don't have the permission to access this account")
+
+    if batchsize:
+        if batchsize < 0 or batchsize >= 600:
+            raise ValueError("Batchsize should be between 1 and 600")
+    else:
+        raise ValueError("Batchsize is invalid or missing. It should be between 1 and 600")
 
     if start_date:
         if start_date.year < 2006 or start_date > datetime.now():
@@ -59,23 +66,26 @@ def query_ad_analytics(headers: dict, category: str, parent: pd.DataFrame, batch
 
     :param pd.DataFrame parent: Dataframe which contains the ids used to filter the query.  Ex - parent : campaign -> child: campaign_analytics
     :param int batch_size: number of ids by batch query (ex - 100)
-    :raises: :class:`ValueError`: The parent dataframe is missing
 
     :returns: Response of the API
     :rtype: dict
     """
-    if "exception" in parent:
-        response = {"exception": "The parent dataframe is empty or invalid, so this dataset cannot be retrieved"}
+    if parent.empty:
+        response = {"exception": "The parent dataframe is empty, so this dataset cannot be retrieved"}
     else:
-        url, initial_params = set_up_query(category)
-        initial_params = date_filter(initial_params, start_date, end_date)
-        ids = parent["id"].values
-        count = len(ids)
-        if count >= batch_size:
-            response = query_by_batch(batch_size, ids, category, url, headers, initial_params)
+        invalid_parent = (parent["exception"].values.size == 0)
+        if invalid_parent:
+            response = {"exception": "The parent dataframe is invalid, so this dataset cannot be retrieved"}
         else:
-            params = {**initial_params, **get_analytics_parameters(ids, category)}
-            response = query(url, headers, params)
+            url, initial_params = set_up_query(category)
+            initial_params = date_filter(initial_params, start_date, end_date)
+            ids = parent["id"].values
+            count = len(ids)
+            if count >= batch_size:
+                response = query_by_batch(batch_size, ids, category, url, headers, initial_params)
+            else:
+                params = {**initial_params, **get_analytics_parameters(ids, category)}
+                response = query(url, headers, params)
     return response
 
 
@@ -124,9 +134,9 @@ def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers:
         if elements:
             response["elements"].extend(elements)
         elif "elements" in query_output:
-            response["exception"].append({"Output without elements": query_output})
+            logger.warning("Empty output: " + str(query_output))
         else:
-            response = {**{"Hint": "consider decreasing the sample size"}, **query_output}
+            response = {**query_output, **{"Hint": "consider decreasing the sample size"}}
             break
     return response
 

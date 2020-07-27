@@ -1,17 +1,18 @@
 import pandas as pd
 import logging
-from typing import List
+from constants import COLUMN_NAMES_DICT
 
 
-def format_to_df(request_query) -> pd.DataFrame:
+def format_to_df(request_query, category) -> pd.DataFrame:
     """Format the elements returned from the query
 
     :param dict request_query:  response from the LinkedIn API
+    :param str category: granularity of the data that you want to get -> ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
 
     :returns: a formatted dataframe
     :rtype: pd.Dataframe
     """
-    api_column_names = build_column_names(request_query)
+    api_column_names = COLUMN_NAMES_DICT[category]
     logger = logging.getLogger()
     logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
     df = pd.DataFrame(columns=api_column_names)
@@ -19,21 +20,11 @@ def format_to_df(request_query) -> pd.DataFrame:
     elements = request_query.get("elements", None)
     if elements:
         df = df.append(pd.DataFrame(request_query["elements"], columns=api_column_names))
+    elif "elements" in request_query:
+        df = pd.DataFrame(columns=api_column_names)
     else:
-        df = df.append(pd.DataFrame({"exception": request_query}))
+        exception_message = str(request_query)
+        logger.warning(str(exception_message))
+        df = df.append(pd.DataFrame({"exception": exception_message}, columns=api_column_names, index=range(1)))
     logger.info("Formatting API results: Done.")
     return df
-
-
-def build_column_names(request_query: dict) -> List[str]:
-    """Retrieve the column names from the API's response
-
-    :returns: column names
-    :rtype: list
-    """
-    content_columns = request_query.get("elements", None)
-    if content_columns:
-        column_names = list(content_columns[0].keys())
-    else:
-        column_names = ["exception"]
-    return column_names

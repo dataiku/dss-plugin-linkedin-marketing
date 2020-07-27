@@ -36,38 +36,41 @@ elif authentication_method == AuthenticationType.OAUTH:
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
 
-if config.get("date_manager"):
+if config.get("date_manager") == "timerange":
     start_date = config.get("start")
     end_date = config.get("end")
     if start_date:
         start_date = datetime.strptime(start_date, "%d/%m/%Y")
     if end_date:
         end_date = datetime.strptime(end_date, "%d/%m/%Y")
+elif config.get("date_manager") == "everyday":
+    start_date = None
+    end_date = None
 
-check_params(HEADERS, account_id, start_date, end_date)
+check_params(HEADERS, account_id, batch_size, start_date, end_date)
 
 # ===============================================================================
 # RUN
 # ===============================================================================
 
 group = query_ads(HEADERS, Category.GROUP, account_id)
-campaign_groups_df = format_to_df(group)
+campaign_groups_df = format_to_df(group, Category.GROUP)
 
 if get_output_names_for_role(Constants.CAMPAIGN_DATASET) or get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
     campaign = query_ads(HEADERS, Category.CAMPAIGN, account_id)
-    campaigns_df = format_to_df(campaign)
+    campaigns_df = format_to_df(campaign, Category.CAMPAIGN)
 
 if get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
     creative = query_ads(HEADERS, Category.CREATIVE, account_id)
-    creatives_df = format_to_df(creative)
+    creatives_df = format_to_df(creative, Category.CREATIVE)
 
 if get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
     campaign_analytics = query_ad_analytics(HEADERS, Category.CAMPAIGN_ANALYTICS, campaigns_df, batch_size=batch_size, start_date=start_date, end_date=end_date)
-    campaign_analytics_df = format_to_df(campaign_analytics)
+    campaign_analytics_df = format_to_df(campaign_analytics, Category.CAMPAIGN_ANALYTICS)
 
 if get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
     creative_analytics = query_ad_analytics(HEADERS, Category.CREATIVE_ANALYTICS, creatives_df, batch_size=batch_size, start_date=start_date, end_date=end_date)
-    creative_analytics_df = format_to_df(creative_analytics)
+    creative_analytics_df = format_to_df(creative_analytics, Category.CREATIVE_ANALYTICS)
 
 
 # ===============================================================================

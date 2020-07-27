@@ -58,7 +58,8 @@
             "label": "Account Id",
             "description": "Id of the sponsored account. You may find it in the LinkedIn Campaign Manager tool : https://www.linkedin.com/campaignmanager/accounts. To retrieve all the tables, the account should contain at least one campaign and one creative",
             "type": "INT",
-            "mandatory": true
+            "mandatory": true,
+            "minI": 0
         },
         {
             "type": "SELECT",
@@ -97,10 +98,12 @@
         {
             "name": "batch_size",
             "label": "Batch size",
-            "description": "Number of ids per batch query. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
+            "description": "Number of ids per batch query. Minimum : 1 , Maximum : 600. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
             "type": "INT",
             "mandatory": true,
-            "defaultValue": 50
+            "defaultValue": 50,
+            "minI": 1,
+            "maxI": 600
         },
         {
             "name": "separator_config",
