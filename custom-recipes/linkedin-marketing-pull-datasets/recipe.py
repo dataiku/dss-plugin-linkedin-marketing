@@ -35,6 +35,7 @@ elif authentication_method == AuthenticationType.OAUTH:
 
 account_id = config.get("account_id")
 batch_size = config.get("batch_size")
+raw_reponse = config.get("raw_response")
 
 if config.get("date_manager") == "timerange":
     start_date = config.get("start")
@@ -54,23 +55,23 @@ check_params(HEADERS, account_id, batch_size, start_date, end_date)
 # ===============================================================================
 
 group = query_ads(HEADERS, Category.GROUP, account_id)
-campaign_groups_df = format_to_df(group, Category.GROUP)
+campaign_groups_df = format_to_df(group, Category.GROUP, raw_reponse)
 
 if get_output_names_for_role(Constants.CAMPAIGN_DATASET) or get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
     campaign = query_ads(HEADERS, Category.CAMPAIGN, account_id)
-    campaigns_df = format_to_df(campaign, Category.CAMPAIGN)
+    campaigns_df = format_to_df(campaign, Category.CAMPAIGN, raw_reponse)
 
 if get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
     creative = query_ads(HEADERS, Category.CREATIVE, account_id)
-    creatives_df = format_to_df(creative, Category.CREATIVE)
+    creatives_df = format_to_df(creative, Category.CREATIVE, raw_reponse)
 
 if get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
     campaign_analytics = query_ad_analytics(HEADERS, Category.CAMPAIGN_ANALYTICS, campaigns_df, batch_size=batch_size, start_date=start_date, end_date=end_date)
-    campaign_analytics_df = format_to_df(campaign_analytics, Category.CAMPAIGN_ANALYTICS)
+    campaign_analytics_df = format_to_df(campaign_analytics, Category.CAMPAIGN_ANALYTICS, raw_reponse)
 
 if get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
     creative_analytics = query_ad_analytics(HEADERS, Category.CREATIVE_ANALYTICS, creatives_df, batch_size=batch_size, start_date=start_date, end_date=end_date)
-    creative_analytics_df = format_to_df(creative_analytics, Category.CREATIVE_ANALYTICS)
+    creative_analytics_df = format_to_df(creative_analytics, Category.CREATIVE_ANALYTICS, raw_reponse)
 
 
 # ===============================================================================

@@ -26,7 +26,7 @@ def check_params(headers: dict, account_id: int, batchsize: int, start_date: dat
     if exception:
         raise ValueError(str(exception))
     else:
-        account_df = format_to_df(account, Category.ACCOUNT)
+        account_df = format_to_df(account, Category.ACCOUNT, False)
         if account_id not in account_df.id.values:
             raise ValueError("Wrong account id or you don't have the permission to access this account")
 

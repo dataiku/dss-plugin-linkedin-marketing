@@ -106,6 +106,17 @@
             "maxI": 600
         },
         {
+            "name": "separator_output",
+            "label": "Output parameter",
+            "type": "SEPARATOR"
+        },
+        {
+            "type": "BOOLEAN",
+            "name": "raw_response",
+            "label": "Retrieve raw response",
+            "defaultValue": false
+        },
+        {
             "name": "separator_config",
             "label": "Configuration",
             "type": "SEPARATOR"
