@@ -2,7 +2,6 @@
 from api_format import format_to_df
 from api_call import check_params, query_ads, query_ad_analytics
 from constants import AuthenticationType, Constants, Category
-import logging
 from datetime import datetime
 
 import dataiku
@@ -17,8 +16,6 @@ from dataiku.customrecipe import (
 config = get_recipe_config()
 
 authentication_method = AuthenticationType(config.get("authentication_method"))
-logger = logging.getLogger()
-logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 if authentication_method == AuthenticationType.TOKEN:
     if config.get("linkedin_access_token"):
