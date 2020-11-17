@@ -1,6 +1,6 @@
 {
     "id": "linkedin-marketing",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "meta": {
         "label": "LinkedIn Marketing Developer Platform",
         "description": "Use LinkedIn API to retrieve data about online campaigns and perform AB testing",
