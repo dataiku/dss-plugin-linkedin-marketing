@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from api_format import format_to_df
-from api_call import check_params, query_ads, query_ad_analytics
+from api_call import check_params, query_ads, query_ad_analytics, set_accounts_filter
 from constants import AuthenticationType, Constants, Category
 from datetime import datetime
 
@@ -30,7 +30,7 @@ elif authentication_method == AuthenticationType.OAUTH:
     else:
         raise ValueError("Please specify an Oauth preset")
 
-account_id = config.get("account_id")
+account_ids = config.get("account_id").split(",")
 batch_size = config.get("batch_size")
 raw_reponse = config.get("raw_response")
 
@@ -45,21 +45,22 @@ elif config.get("date_manager") == "everyday":
     start_date = None
     end_date = None
 
-check_params(HEADERS, account_id, batch_size, start_date, end_date)
+check_params(HEADERS, account_ids, batch_size, start_date, end_date)
+accounts_filter = set_accounts_filter(account_ids)
 
 # ===============================================================================
 # RUN
 # ===============================================================================
 
-group = query_ads(HEADERS, Category.GROUP, account_id)
+group = query_ads(HEADERS, Category.GROUP, accounts_filter)
 campaign_groups_df = format_to_df(group, Category.GROUP, raw_reponse)
 
 if get_output_names_for_role(Constants.CAMPAIGN_DATASET) or get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):
-    campaign = query_ads(HEADERS, Category.CAMPAIGN, account_id)
+    campaign = query_ads(HEADERS, Category.CAMPAIGN, accounts_filter)
     campaigns_df = format_to_df(campaign, Category.CAMPAIGN, raw_reponse)
 
 if get_output_names_for_role(Constants.CREATIVE_DATASET) or get_output_names_for_role(Constants.CREATIVE_ANALYTICS_DATASET):
-    creative = query_ads(HEADERS, Category.CREATIVE, account_id)
+    creative = query_ads(HEADERS, Category.CREATIVE, accounts_filter)
     creatives_df = format_to_df(creative, Category.CREATIVE, raw_reponse)
 
 if get_output_names_for_role(Constants.CAMPAIGN_ANALYTICS_DATASET):

@@ -11,24 +11,29 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
-def check_params(headers: dict, account_id: int, batchsize: int, start_date: datetime, end_date: datetime):
+def check_params(headers: dict, account_ids: list, batchsize: int, start_date: datetime, end_date: datetime):
     """Check if the account id and the access tokens are valid
 
     :param dict headers:  Headers of the GET query, it contains the access token for the OAuth2 identification
-    :param int account_id:  ID of the sponsored ad account
+    :param list account_ids:  list of IDs of the sponsored ad accounts
     :param int batch_size: number of ids by batch query (ex - 100)
     :param datetime start_date:  First day of the chosen time range (None for all time)
     :param datetime end_date:  Last day of the time range (None for today)
     :raises: :class:`ValueError`: Invalid parameters
     """
-    account = query_ads(headers, Category.ACCOUNT, account_id)
+    for account_id in account_ids:
+        if not account_id.strip().isnumeric():
+            raise ValueError("Wrong format for the account id"+account_id +
+                             ". It should be an integer that you can find using the following url : https://www.linkedin.com/campaignmanager/accounts")
+    account = query_ads(headers, Category.ACCOUNT, {})
     exception = account.get("exception", None)
     if exception:
         raise ValueError(str(exception))
     else:
         account_df = format_to_df(account, Category.ACCOUNT, False)
-        if account_id not in account_df.id.values:
-            raise ValueError("Wrong account id or you don't have the permission to access this account")
+        for account_id in account_ids:
+            if int(account_id) not in account_df.id.values:
+                raise ValueError("Wrong account id or you don't have the permission to access the account "+account_id)
 
     if batchsize:
         if batchsize < 0 or batchsize >= 600:
@@ -47,15 +52,16 @@ def check_params(headers: dict, account_id: int, batchsize: int, start_date: dat
             raise ValueError("Please select a valid end date")
 
 
-def query_ads(headers: dict, category: str, account_id: int) -> dict:
+def query_ads(headers: dict, category: str, accounts_filter: dict) -> dict:
     """Query the LinkedIn ad API. LinkedIn ad handles pagination
 
     :param str category: granularity of the data that you want to get -> ACCOUNT, GROUP, CAMPAIGN, CREATIVES, CAMPAIGN_ANALYTICS, CREATIVES_ANALYTICS
+    :param dict accounts_filter: parameters used in the GET query to filter on ad accounts
 
     :returns: Response of the API
     :rtype: dict
     """
-    url, params = set_up_query(category, account_id)
+    url, params = set_up_query(category, accounts_filter)
     response = query_with_pagination(url, headers, params)
     return response
 
@@ -134,7 +140,7 @@ def query_by_batch(batch_size: int, ids: list, category: str, url: str, headers:
         if elements:
             response["elements"].extend(elements)
         elif "elements" in query_output:
-            logger.warning("Empty output: " + str(query_output))
+            logger.warning("Empty output for params: " + str(params))
         else:
             response = {**query_output, **{"Hint": "consider decreasing the sample size"}}
             break
@@ -151,7 +157,7 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
     return response.json()
 
 
-def set_up_query(category: str, account_id: int = 0) -> (str, dict):
+def set_up_query(category: str, accounts_filter: dict = {}) -> (str, dict):
     """Retrieve the proper url and initial parameters for a given category
 
     :returns: URL and initial parameters for the GET query
@@ -165,46 +171,47 @@ def set_up_query(category: str, account_id: int = 0) -> (str, dict):
         "CREATIVES": "https://api.linkedin.com/v2/adCreativesV2/",
         "CREATIVES_ANALYTICS": "https://api.linkedin.com/v2/adAnalyticsV2"
     }
-    initial_param = {
-        "ACCOUNT": {
-            "q": "search"
-        },
-        "GROUP": {
-            "q": "search",
-            "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
-        },
-        "CAMPAIGN": {
-            "q": "search",
-            "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
-        },
-        "CREATIVES": {
-            "q": "search",
-            "search.account.values[0]": "urn:li:sponsoredAccount:" + str(account_id)
-        },
-        "CAMPAIGN_ANALYTICS": {
+    if category == Category.ACCOUNT:
+        params = {"q": "search"}
+    elif category == Category.GROUP or category == Category.CAMPAIGN or category == Category.CREATIVE:
+        params = accounts_filter
+    elif category == Category.CAMPAIGN_ANALYTICS:
+        params = {
             "q": "analytics",
             "pivot": "CAMPAIGN",
             "dateRange.start.day": "1",
             "dateRange.start.month": "1",
             "dateRange.start.year": "2006",
-            "timeGranularity": "DAILY"
-        },
-        "CREATIVES_ANALYTICS": {
-            "q": "analytics",
-            "pivot": "CREATIVE",
-            "dateRange.start.day": "1",
-            "dateRange.start.month": "1",
-            "dateRange.start.year": "2006",
-            "timeGranularity": "DAILY"
+            "timeGranularity": "DAILY",
+            "projection": "(*,elements*(dateRange(*),costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue~(localizedName)))",
+            "fields": "dateRange,costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue"
         }
-    }
-
-    if category not in initial_param:
+    elif category == Category.CREATIVE_ANALYTICS:
+        params = {"q": "analytics",
+                  "pivot": "CREATIVE",
+                  "dateRange.start.day": "1",
+                  "dateRange.start.month": "1",
+                  "dateRange.start.year": "2006",
+                  "timeGranularity": "DAILY",
+                  "projection": "(*,elements*(dateRange(*),costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue~(localizedName)))",
+                  "fields": "dateRange,costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue"
+                  }
+    else:
         raise ValueError("category value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
-
     url = url[category]
-    params = initial_param[category]
     return url, params
+
+
+def set_accounts_filter(account_ids: list) -> dict:
+    """Given a list of account ids, returns parameters with corresponding filters.
+
+    :returns: accounts_filter: Parameters used to filter the query for given account ids
+    :rtype: dict
+    """
+    accounts_filter = {"q": "search"}
+    for i, account_id in enumerate(account_ids):
+        accounts_filter["search.account.values[{}]".format(i)] = "urn:li:sponsoredAccount:{}".format(int(account_id))
+    return accounts_filter
 
 
 def date_filter(param: dict(), start_date: datetime, end_date: datetime) -> dict:
