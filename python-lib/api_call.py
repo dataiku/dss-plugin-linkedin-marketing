@@ -182,7 +182,9 @@ def set_up_query(category: str, accounts_filter: dict = {}) -> (str, dict):
             "dateRange.start.day": "1",
             "dateRange.start.month": "1",
             "dateRange.start.year": "2006",
-            "timeGranularity": "DAILY"
+            "timeGranularity": "DAILY",
+            "projection": "(*,elements*(dateRange(*),costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue~(localizedName)))",
+            "fields": "dateRange,costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue"
         }
     elif category == Category.CREATIVE_ANALYTICS:
         params = {"q": "analytics",
@@ -190,7 +192,10 @@ def set_up_query(category: str, accounts_filter: dict = {}) -> (str, dict):
                   "dateRange.start.day": "1",
                   "dateRange.start.month": "1",
                   "dateRange.start.year": "2006",
-                  "timeGranularity": "DAILY"}
+                  "timeGranularity": "DAILY",
+                  "projection": "(*,elements*(dateRange(*),costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue~(localizedName)))",
+                  "fields": "dateRange,costInUsd,impressions,clicks,externalWebsitePostClickConversions,externalWebsitePostViewConversions,pivotValue"
+                  }
     else:
         raise ValueError("category value is not valid : should be either ACCOUNT, GROUP, CAMPAIGN, CAMPAIGN_ANALYTICS, CREATIVES or CREATIVES_ANALYTICS")
     url = url[category]

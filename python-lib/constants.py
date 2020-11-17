@@ -71,12 +71,14 @@ COLUMN_NAMES_DICT = {
                                   "clicks",
                                   "dateRange",
                                   "externalWebsitePostClickConversions",
-                                  "externalWebsitePostViewConversions"],
+                                  "externalWebsitePostViewConversions",
+                                  "exception"],
     Category.CREATIVE_ANALYTICS: ["pivotValue",
                                   "costInUsd",
                                   "impressions",
                                   "clicks",
                                   "dateRange",
                                   "externalWebsitePostClickConversions",
-                                  "externalWebsitePostViewConversions"]
+                                  "externalWebsitePostViewConversions",
+                                  "exception"]
 }
