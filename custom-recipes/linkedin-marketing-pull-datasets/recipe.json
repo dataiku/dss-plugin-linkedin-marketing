@@ -101,8 +101,7 @@
             "type": "INT",
             "mandatory": true,
             "defaultValue": 50,
-            "minI": 1,
-            "maxI": 600
+            "minI": 1
         },
         {
             "name": "separator_output",
@@ -136,7 +135,7 @@
             ],
             "mandatory": true,
             "defaultValue": "token",
-            "visibilityCondition": false
+            "visibilityCondition": true
         },
         {
             "name": "linkedin_access_token",
