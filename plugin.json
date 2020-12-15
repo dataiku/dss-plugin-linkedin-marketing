@@ -2,13 +2,12 @@
     "id": "linkedin-marketing",
     "version": "0.0.3",
     "meta": {
-        "label": "LinkedIn Marketing Developer Platform",
+        "label": "LinkedIn Marketing",
         "description": "Use LinkedIn API to retrieve data about online campaigns and perform AB testing",
         "author": "Dataiku (Adam JELLEY and Marine SOBAS)",
         "icon": "icon-linkedin",
-        "tags": ["Connector"],
-        // URL where the user can learn more about the plugin
-        "url": "https://www.dataiku.com/dss/plugins/info/linkedin-marketing.html",
+        "tags": ["Cloud"],
+        "url": "https://www.dataiku.com/product/plugins/linkedin-marketing/",
         "supportLevel":"NOT_SUPPORTED",
         "licenseInfo": "Apache Software License"
     }

@@ -56,7 +56,7 @@
         {
             "name": "account_id",
             "label": "Account Ids",
-            "description": "Ids of the sponsored accounts that you want to retrieve. For multiple accounts, separate the ids with a comma using the following format : id1,id2,id3. You may find the list of accounts in the LinkedIn Campaign Manager tool : https://www.linkedin.com/campaignmanager/accounts. To retrieve all the tables, the account should contain at least one campaign and one creative",
+            "description": "Comma separated list of sponsored accounts' IDs to be retrieved. See documentation.",
             "type": "STRING",
             "mandatory": true
         },
@@ -97,7 +97,7 @@
         {
             "name": "batch_size",
             "label": "Batch size",
-            "description": "Number of ids per batch query. Minimum : 1 , Maximum : 600. A request should not return more than 1,000 entities (campaigns, creatives...). When the API raises a error 400 : Request would return too many entities, consider decreasing the batch size.",
+            "description": "Number of ids per batch query. A query should not return more than 1,000 entities.",
             "type": "INT",
             "mandatory": true,
             "defaultValue": 50,
@@ -144,13 +144,6 @@
             "type": "PRESET",
             "parameterSetId": "linkedin-token",
             "visibilityCondition": "model.authentication_method == 'token'"
-        },
-        {
-            "name": "linkedin_oauth",
-            "label": "Oauth2",
-            "type": "PRESET",
-            "parameterSetId": "3-legged-oauth",
-            "visibilityCondition": "model.authentication_method == 'oauth'"
         }
     ],
     "resourceKeys": []

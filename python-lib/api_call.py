@@ -36,7 +36,7 @@ def check_params(headers: dict, account_ids: list, batchsize: int, start_date: d
                 raise ValueError("Wrong account id or you don't have the permission to access the account "+account_id)
 
     if batchsize:
-        if batchsize < 0 or batchsize >= 600:
+        if batchsize < 0 or batchsize > 600:
             raise ValueError("Batchsize should be between 1 and 600")
     else:
         raise ValueError("Batchsize is invalid or missing. It should be between 1 and 600")
@@ -154,7 +154,12 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
     :rtype: dict
     """
     response = requests.get(url=url, headers=headers, params=parameters)
-    return response.json()
+    if response.status_code < 400:
+        return response.json()
+    elif response.status_code == 400:
+        return {"error": "Error 400. Consider decreasing the batch size"}
+    else:
+        return {"error": "Error{}".format(response.status_code)}
 
 
 def set_up_query(category: str, accounts_filter: dict = {}) -> (str, dict):
