@@ -1,0 +1,150 @@
+{
+    "meta": {
+        "label": "Retrieve LinkedIn campaigns",
+        "description": "Pull campaign groups, campaigns, creatives, campaign analytics and creative analytics from the LinkedIn API",
+        "icon": "icon-linkedin"
+    },
+    "kind": "PYTHON",
+    "outputRoles": [
+        {
+            "name": "campaign_group_dataset",
+            "label": "Campaign groups output",
+            "description": "Description of the campaign groups from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "campaign_dataset",
+            "label": "Campaigns output",
+            "description": "Description of the campaigns from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "creative_dataset",
+            "label": "Creatives output",
+            "description": "Description of the creatives from LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "campaign_analytics_dataset",
+            "label": "Campaigns' metrics",
+            "description": "Metrics related to the campaigns from the LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "creatives_analytics_dataset",
+            "label": "Creatives' metrics",
+            "description": "Metrics related to the creatives from the LinkedIn Campaign Manager tool",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        }
+    ],
+    "params": [
+        {
+            "name": "separator_input",
+            "label": "Input parameter",
+            "type": "SEPARATOR"
+        },
+        {
+            "name": "account_id",
+            "label": "Account Ids",
+            "description": "Comma separated list of sponsored accounts' IDs to be retrieved. See documentation.",
+            "type": "STRING",
+            "mandatory": true
+        },
+        {
+            "type": "SELECT",
+            "name": "date_manager",
+            "label": "Choose a timeline",
+            "selectChoices": [
+                {
+                    "value": "everyday",
+                    "label": "All time"
+                },
+                {
+                    "value": "timerange",
+                    "label": "Time range"
+                }
+            ],
+            "mandatory": true,
+            "defaultValue": "everyday",
+            "visibilityCondition": true
+        },
+        {
+            "type": "STRING",
+            "name": "start",
+            "label": "Start date (UTC midnight)",
+            "description": "Format dd/MM/YYYY",
+            "parameterSetId": "start-date",
+            "visibilityCondition": "model.date_manager == 'timerange'"
+        },
+        {
+            "type": "STRING",
+            "name": "end",
+            "label": "End date (UTC midnight)",
+            "description": "Format dd/MM/YYYY",
+            "parameterSetId": "end-date",
+            "visibilityCondition": "model.date_manager == 'timerange'"
+        },
+        {
+            "name": "batch_size",
+            "label": "Batch size",
+            "description": "Number of ids per batch query. A query should not return more than 1,000 entities.",
+            "type": "INT",
+            "mandatory": true,
+            "defaultValue": 50,
+            "minI": 1,
+            "maxI": 600
+        },
+        {
+            "name": "separator_output",
+            "label": "Output parameter",
+            "type": "SEPARATOR"
+        },
+        {
+            "type": "BOOLEAN",
+            "name": "raw_response",
+            "label": "Retrieve raw response",
+            "defaultValue": false
+        },
+        {
+            "name": "separator_config",
+            "label": "Configuration",
+            "type": "SEPARATOR"
+        },
+        {
+            "type": "SELECT",
+            "name": "authentication_method",
+            "label": "Authentication method",
+            "selectChoices": [
+                {
+                    "value": "token",
+                    "label": "Access token"
+                },
+                {
+                    "value": "oauth",
+                    "label": "OAuth"
+                }
+            ],
+            "mandatory": true,
+            "defaultValue": "token",
+            "visibilityCondition": false
+        },
+        {
+            "name": "linkedin_access_token",
+            "label": "Access token",
+            "type": "PRESET",
+            "parameterSetId": "linkedin-token",
+            "visibilityCondition": "model.authentication_method == 'token'"
+        }
+    ],
+    "resourceKeys": []
+}

@@ -1,0 +1,13 @@
+.journal
+.mainlock
+.wlock
+.ts
+.git
+*.pyc
+.coverage
+.htmlcov
+.DS_Store
+.idea
+state.json 
+setup.cfg
+.vscode
