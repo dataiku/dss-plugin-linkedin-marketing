@@ -12,6 +12,9 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
 
 
+class LinkedinPluginError(ValueError):
+    pass
+
 def check_params(headers: dict, account_ids: list, batchsize: int, start_date: datetime, end_date: datetime):
     """Check if the account id and the access tokens are valid
 
@@ -165,7 +168,7 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
             logger.warning("ERROR:{}".format(err))
             logger.warning("on attempt #{}".format(attempt_number))
             if attempt_number == Constants.MAX_RETRIES:
-                raise SharePointClientError("Error in batch processing on attempt #{}: {}".format(attempt_number, err))
+                raise LinkedinPluginError("Error in batch processing on attempt #{}: {}".format(attempt_number, err))
             time.sleep(Constants.WAIT_TIME_BEFORE_RETRY_SEC)
     if response.status_code < 400:
         return response.json()
