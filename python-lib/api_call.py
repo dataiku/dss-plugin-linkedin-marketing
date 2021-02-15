@@ -166,14 +166,14 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
             successful_get = True
         except Exception as err:
             logger.warning("ERROR:{}".format(err))
-            logger.warning("on attempt #{}".format(attempt_number))
+            logger.warning("URl={} on attempt #{}".format(url, attempt_number))
             if attempt_number == Constants.MAX_RETRIES:
-                raise LinkedinPluginError("Error in batch processing on attempt #{}: {}".format(attempt_number, err))
+                raise LinkedinPluginError("Error while accessing {} on attempt #{}: {}".format(url, attempt_number, err))
             time.sleep(Constants.WAIT_TIME_BEFORE_RETRY_SEC)
     if response.status_code < 400:
         return response.json()
     elif response.status_code == 400:
-        return {"error": "Error 400. Consider decreasing the batch size"}
+        return {"error": "Error 400. Consider decreasing the number of account ids or the batch size."}
     else:
         return {"error": "Error{}".format(response.status_code)}
 
