@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from math import ceil
 import logging
+import time
 from datetime import datetime
 from api_format import format_to_df
 from constants import Constants, Category
@@ -153,7 +154,19 @@ def query(url: str, headers: dict, parameters: dict) -> dict:
     :returns: API's response
     :rtype: dict
     """
-    response = requests.get(url=url, headers=headers, params=parameters)
+    successful_get = False
+    attempt_number = 0
+    while not successful_get and attempt_number <= Constants.MAX_RETRIES:
+        try:
+            attempt_number += 1
+            response = requests.get(url=url, headers=headers, params=parameters)
+            successful_get = True
+        except Exception as err:
+            logger.warning("ERROR:{}".format(err))
+            logger.warning("on attempt #{}".format(attempt_number))
+            if attempt_number == Constants.MAX_RETRIES:
+                raise SharePointClientError("Error in batch processing on attempt #{}: {}".format(attempt_number, err))
+            time.sleep(Constants.WAIT_TIME_BEFORE_RETRY_SEC)
     if response.status_code < 400:
         return response.json()
     elif response.status_code == 400:

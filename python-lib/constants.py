@@ -13,6 +13,8 @@ class Constants(object):
     CREATIVE_DATASET = "creative_dataset"
     CREATIVE_ANALYTICS_DATASET = "creatives_analytics_dataset"
     DEFAULT_BATCH_SIZE = 80
+    MAX_RETRIES = 5
+    WAIT_TIME_BEFORE_RETRY_SEC = 5
 
 
 class Category(object):
