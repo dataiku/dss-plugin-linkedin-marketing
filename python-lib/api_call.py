@@ -6,7 +6,7 @@ import logging
 import time
 from datetime import datetime
 from api_format import format_to_df
-from constants import Constants, Category
+from dku_constants import Constants, Category
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO, format="LinkedIn Marketing plugin %(levelname)s - %(message)s")
