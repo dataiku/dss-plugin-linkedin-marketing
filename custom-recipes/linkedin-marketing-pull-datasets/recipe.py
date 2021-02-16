@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from api_format import format_to_df
 from api_call import check_params, query_ads, query_ad_analytics, set_accounts_filter
-from constants import AuthenticationType, Constants, Category
+from dku_constants import AuthenticationType, Constants, Category
 from datetime import datetime
 
 import dataiku

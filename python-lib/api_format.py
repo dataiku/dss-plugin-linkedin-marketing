@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 from typing import List
 
-from constants import COLUMN_NAMES_DICT
+from dku_constants import COLUMN_NAMES_DICT
 
 
 def format_to_df(request_query: dict, category: str, raw_response: bool) -> pd.DataFrame:
