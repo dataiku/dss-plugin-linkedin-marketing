@@ -15,5 +15,5 @@ test_kwargs = {
 
 
 def test_run_linkedin_marketing_update_all_ids(user_clients):
-    test_kwargs["client"] = user_clients[test_kwargs["user"]]
+    test_kwargs["client"] = user_clients[test_kwargs["data_scientist_1"]]
     dss_scenario.run(scenario_id="UpdateAllIDs", **test_kwargs)
