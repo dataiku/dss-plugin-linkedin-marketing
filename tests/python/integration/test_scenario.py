@@ -8,12 +8,10 @@ pytestmark = pytest.mark.usefixtures("plugin", "dss_target")
 
 
 test_kwargs = {
-    "user": "user1",
-    "project_key": "PLUGINTESTLINKEDINMARKETING",
-    "logger": logging.getLogger("dss-plugin-test.linkedin-marketing.test_scenario"),
+    "user": "data_scientist_1",
+    "project_key": "PLUGINTESTLINKEDINMARKETING"
 }
 
 
-def test_run_linkedin_marketing_update_all_ids(user_clients):
-    test_kwargs["client"] = user_clients[test_kwargs["data_scientist_1"]]
-    dss_scenario.run(scenario_id="UpdateAllIDs", **test_kwargs)
+def test_run_linkedin_marketing_update_all_ids(user_dss_clients):
+    dss_scenario.run(user_dss_clients, scenario_id="UpdateAllIDs", **test_kwargs)
