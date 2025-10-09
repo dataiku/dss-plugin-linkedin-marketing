@@ -6,7 +6,8 @@
         "description": "Use LinkedIn API to retrieve data about online campaigns and perform AB testing",
         "author": "Dataiku (Marine SOBAS)",
         "icon": "icon-linkedin",
-        "tags": ["Cloud"],
+        "category": "Connect",
+        "tags": ["Data source", "Analytics", "Recipe"],
         "url": "https://www.dataiku.com/product/plugins/linkedin-marketing/",
         "supportLevel":"NOT_SUPPORTED",
         "licenseInfo": "Apache Software License"
